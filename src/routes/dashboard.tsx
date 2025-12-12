@@ -10,7 +10,14 @@ import allergyIcon from '@/assets/dashboard/allergy.svg'
 import lifestyleIcon from '@/assets/dashboard/lifestyle.svg'
 import documentIcon from '@/assets/dashboard/document.svg'
 import documentsIcon from '@/assets/dashboard/documents.svg'
+import searchIcon from '@/assets/search (1).svg'
+import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
+import MedicationIcon from '@/assets/MedicationIcon.svg'
+import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
+import AllergyIcon from '@/assets/AllergyIcon.svg'
 import { UserFullSummaryDto } from '@/dtos/user.dto'
+import { MedicalInfoSection } from '@/components/MedicalInfoSection'
+import { DocumentSection } from '@/components/DocumentSection'
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context }) => {
     if (!context.isAuthenticated) {
@@ -34,11 +41,73 @@ function DashboardPage() {
     governmentId: '123456789',
     dateOfBirth: new Date('1990-01-01'),
     birthPlace: 'Beirut',
-    medicalConditions: [],
-    medications: [],
-    allergies: [],
-    lifestyles: [],
-    documents: [],
+    medicalConditions: [
+      {
+        id: '1',
+        userId: '1',
+        name: 'Eczema',
+        diagnosedDate: new Date('2018-04-12'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '2',
+        userId: '1',
+        name: 'Migraine',
+        diagnosedDate: new Date('2018-04-12'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    medications: [
+      {
+        id: '1',
+        userId: '1',
+        name: 'Paracetamol (Doliprane)',
+        dosage: '500mg',
+        prescribedDate: new Date('2020-08-05'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    allergies: [
+      {
+        id: '1',
+        userId: '1',
+        name: 'Peanuts',
+        diagnosedDate: new Date('2015-03-15'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    lifestyles: [
+      {
+        id: '1',
+        userId: '1',
+        type: 'Smoking',
+        value: 'Non-smoker',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date('2024-01-01'),
+      },
+    ],
+    documents: [
+      {
+        id: '1',
+        userId: '1',
+        title: 'CBC Complete Blood Count',
+        fileUrl: 'https://example.com/cbc.pdf',
+        uploadedDate: new Date('2025-10-27'),
+        aiSummary: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
   }
 
   const hasHealthData =
@@ -104,6 +173,109 @@ function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Search bar - when there is health data */}
+      {hasHealthData && (
+        <>
+          <div className="px-4 mt-6">
+            <div className="w-full h-12 rounded-full flex flex-row items-center px-4 gap-3" style={{ background: '#F1F1F1' }}>
+              <img src={searchIcon} alt="search" className="w-6 h-6" />
+              <input
+                type="text"
+                placeholder="Search space"
+                className="flex-1 bg-transparent outline-none placeholder:text-[#AEAEAE]"
+                style={{
+                  fontFamily: 'Inter',
+                  fontWeight: 500,
+                  fontSize: '14px',
+                  lineHeight: '121%',
+                  letterSpacing: '0%',
+                  color: '#000000',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Health data sections */}
+          <div className="px-4 pb-24">
+            {/* Documents section */}
+            {user.documents.length > 0 && (
+              <DocumentSection
+                title="Documents"
+                items={user.documents.map(doc => ({
+                  title: doc.title,
+                  date: doc.uploadedDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) || '',
+                  aiSummary: doc.aiSummary || '',
+                }))}
+              />
+            )}
+
+            {/* Medical conditions section */}
+            {user.medicalConditions.length > 0 && (
+              <MedicalInfoSection
+                title="Medical conditions"
+                showToggle={false}
+                icon={MedicalConditionIcon}
+                items={user.medicalConditions.map(condition => ({
+                  title: condition.name,
+                  description: condition.diagnosedDate
+                    ? `Diagnosed: ${condition.diagnosedDate.toLocaleDateString('en-GB')}`
+                    : 'No diagnosis date',
+                  isRelevant: true,
+                }))}
+              />
+            )}
+
+            {/* Medications section */}
+            {user.medications.length > 0 && (
+              <MedicalInfoSection
+                title="Medications"
+                showToggle={false}
+                icon={MedicationIcon}
+                items={user.medications.map(medication => ({
+                  title: medication.name,
+                  description: medication.prescribedDate
+                    ? `Prescribed: ${medication.prescribedDate.toLocaleDateString('en-GB')}`
+                    : 'No prescription date',
+                  isRelevant: true,
+                }))}
+              />
+            )}
+
+            {/* Lifestyle section */}
+            {user.lifestyles.length > 0 && (
+              <MedicalInfoSection
+                title="Lifestyle"
+                showToggle={false}
+                icon={LifeStyleIcon}
+                items={user.lifestyles.map(lifestyle => ({
+                  title: lifestyle.value,
+                  description: lifestyle.updatedAt
+                    ? `Updated: ${lifestyle.updatedAt.toLocaleDateString('en-GB')}`
+                    : 'No update date',
+                  isRelevant: true,
+                }))}
+              />
+            )}
+
+            {/* Allergies section */}
+            {user.allergies.length > 0 && (
+              <MedicalInfoSection
+                title="Allergies"
+                showToggle={false}
+                icon={AllergyIcon}
+                items={user.allergies.map(allergy => ({
+                  title: allergy.name,
+                  description: allergy.diagnosedDate
+                    ? `Diagnosed: ${allergy.diagnosedDate.toLocaleDateString('en-GB')}`
+                    : 'No diagnosis date',
+                  isRelevant: true,
+                }))}
+              />
+            )}
+          </div>
+        </>
+      )}
 
       {/* Empty state - when no health data */}
       {!hasHealthData && (
