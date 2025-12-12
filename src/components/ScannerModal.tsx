@@ -25,21 +25,21 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
   const sdkRef = useRef<ScanbotSDK | null>(null)
   const scannerRef = useRef<Awaited<ReturnType<ScanbotSDK['createDocumentScanner']>> | null>(null)
   const LICENSE_KEY =
-        "gTgRJOBGseRH1Q1HLQQdjki71pXVK2" +
-        "6cQ9heybAYgELqdJQRgaoCxMF+pKIF" +
-        "S/GC4oD/vSImZN9PgrMcMWuzWK3AOe" +
-        "8MwspuzRprtdZpTrP40wJndUTh/Rl8" +
-        "l79Qe8VsW+nU+D6RRQjfclF3Y6JtFs" +
-        "V8n5NQXa7NWvoUMuJ7lqw5VVB3bBKP" +
-        "IxUcWHJAZo/H32PWn55cjNuZZKFgfS" +
-        "5fGkLWMBlDSNkLGtUJxgEtwZMG3SPn" +
-        "ofooJsm54kvYWB0bJBvtKhNyMzRfMC" +
-        "KRlFJ4x0M3anHkEdBZBMqDV+N/7Cr9" +
-        "y4c1IUrV2qD6u0vnaIL3iDKQgaz2ez" +
-        "9wVDHIFpzzsw==\nU2NhbmJvdFNESw" +
-        "poYWtrZW1uaS5pbnRlcm5hbGl6YWJs" +
-        "ZS5kZXYKMTc2NjE4ODc5OQo4Mzg4Nj" +
-        "A3CjE5\n";
+        "WezA/HkyRRi1umPjs5Qgkj1MyITLV5" +
+        "0BmIWhmPpsBlPokhZ2avkLCmJoCQlx" +
+        "bbFsHlP51oCDmNS8YFVcq5NR7Hz4LM" +
+        "upUKpWVWTYNhqxsIRPt2KSWMQW2ZK/" +
+        "5xv4UzgjmRUdLFQp34PXbyg//EmsL6" +
+        "wpFe2LdsPxqCuFEwKdRA1hi0JWYlcX" +
+        "khmb/kbP558giYC7BCbohy+W2Sqb/I" +
+        "LeCW5rYFfnbdGbxPTv2jgb2VGlG2a7" +
+        "T2CuhzPPSX/FvDk323kUNtn81Oo1C7" +
+        "CX8YbjH9VwQagh4eRjUKzAkTlZBCxG" +
+        "v2YXKNdQx9UvgG8MMTdb2+VLk8jNVH" +
+        "g44jSwYs1nXQ==\nU2NhbmJvdFNESw" +
+        "psb2NhbGhvc3R8aGFra2VtbmkuaW50" +
+        "ZXJuYWxpemFibGUuZGV2CjE3NjYxOD" +
+        "g3OTkKODM4ODYwNwo4\n";
 
   useEffect(() => {
     if (!isOpen) return
