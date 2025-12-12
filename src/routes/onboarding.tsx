@@ -1,12 +1,17 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { useSetAtom } from 'jotai'
 import backgroundImg from '@/assets/onboarding/background.png'
 import logoImg from '@/assets/onboarding/logo.svg'
 import lebanonFlagImg from '@/assets/onboarding/lebanon.svg'
 import arrowForwardImg from '@/assets/onboarding/arrow_forward.svg'
 import { ScannerModal } from '@/components/ScannerModal'
 import { HealthPassCard } from '@/components/HealthPassCard'
+import { userAtom } from '@/atoms/user.atom'
+import { userDetailsAtom } from '@/atoms/userDetails.atom'
+import { AuthTokenResponseDto } from '@/dtos/auth.dto'
+import { UserResponseDto } from '@/dtos/user.dto'
 
 export const Route = createFileRoute('/onboarding')({
   beforeLoad: ({ context }) => {
@@ -20,26 +25,81 @@ export const Route = createFileRoute('/onboarding')({
 function OnboardingPage() {
   const [isScannerOpen, setIsScannerOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [userDetails, setUserDetailsState] = useState<UserResponseDto | null>(null)
   const [showSuccessSheet, setShowSuccessSheet] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const setUserDetails = useSetAtom(userDetailsAtom)
   const navigate = useNavigate()
+  const setUser = useSetAtom(userAtom)
 
   const handleScanComplete = async (imageData: string) => {
     setIsSubmitting(true)
-
-    // Mock sending to backend
-    console.log('Scanned image data:', imageData.substring(0, 100) + '...')
+    setError(null)
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 10000))
+      // Convert base64 to blob
+      const base64Response = await fetch(imageData)
+      const blob = await base64Response.blob()
 
-      // Mock backend response
-      console.log('Image successfully sent to backend')
+      // Save the image for debugging - creates a download link
+      const debugUrl = URL.createObjectURL(blob)
+      const debugLink = document.createElement('a')
+      debugLink.href = debugUrl
+      debugLink.download = `id-card-${Date.now()}.jpg`
+      debugLink.click()
+      URL.revokeObjectURL(debugUrl)
+      console.log('Image saved for debugging. Base64 length:', imageData.length, 'Blob size:', blob.size)
+
+      // Create FormData and append the image
+      const formData = new FormData()
+      formData.append('image', blob, 'id-card.jpg')
+
+      // Call the verify-id API (uses Vite proxy in development)
+      const response = await fetch('/api/v1/auth/verify-id', {
+        method: 'POST',
+        body: formData,
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to verify ID card')
+      }
+
+      // Update user atom with auth token response
+      const authData: AuthTokenResponseDto = {
+        accessToken: result.data.token.accessToken,
+        refreshToken: result.data.token.refreshToken,
+        expiresIn: result.data.token.expiresIn,
+        user: {
+          id: result.data.user.id,
+          fullName: result.data.user.fullName,
+          governmentId: result.data.user.governmentId || '',
+        },
+      }
+      setUser(authData)
+
+      // Fetch user details
+      const userDetailsResponse = await fetch('/api/v1/users/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authData.accessToken}`,
+        },
+      })
+
+      const userDetailsResult = await userDetailsResponse.json()
+
+      if (userDetailsResponse.ok && userDetailsResult.success) {
+        const details: UserResponseDto = userDetailsResult.data
+        setUserDetails(details)
+        setUserDetailsState(details)
+      }
 
       // Show success sheet
       setShowSuccessSheet(true)
-    } catch (error) {
-      console.error('Failed to send image to backend:', error)
+    } catch (err) {
+      console.error('Failed to verify ID:', err)
+      setError(err instanceof Error ? err.message : 'Failed to verify ID card. Please try again.')
     } finally {
       setIsSubmitting(false)
     }
@@ -65,6 +125,9 @@ function OnboardingPage() {
                         {isSubmitting ? 'Processing...' : 'Scan my Lebanese ID'}
                     </p>
                 </button>
+                {error && (
+                    <p className="text-red-400 text-sm text-center w-full">{error}</p>
+                )}
             </div>
         </div>
 
@@ -98,8 +161,11 @@ function OnboardingPage() {
               </p>
 
               {/* Card with layered boxes */}
-              <div className="mb-6">
-                <HealthPassCard />
+              <div className="mb-6 w-full">
+                <HealthPassCard
+                  name={userDetails?.fullName || ''}
+                  dob={userDetails?.dateOfBirth ? new Date(userDetails.dateOfBirth).toLocaleDateString() : ''}
+                />
               </div>
 
               <button

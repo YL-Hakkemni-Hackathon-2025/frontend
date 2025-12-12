@@ -1,18 +1,139 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import AppStoreDownload from '@/assets/AppStoreDownload.svg'
 import PlayStoreDownload from '@/assets/PlayStoreDownload.svg'
 import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
 import MedicationIcon from '@/assets/MedicationIcon.svg'
 import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
 import AllergyIcon from '@/assets/AllergyIcon.svg'
+import DocumentIcon from '@/assets/DocumentIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
-import { DocumentSection } from '@/components/DocumentSection'
+import { HealthPassPreviewDto } from '@/dtos/health-pass.dto'
+import { AppointmentSpecialty } from '@/utils/global.types'
+
+interface SearchParams {
+  code?: string
+}
 
 export const Route = createFileRoute('/health-summary')({
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    return {
+      code: search.code as string | undefined,
+    }
+  },
   component: HealthSummaryPage,
 })
 
+// Helper to get display name for specialty
+function getSpecialtyDisplayName(specialty: AppointmentSpecialty): string {
+  const names: Record<AppointmentSpecialty, string> = {
+    [AppointmentSpecialty.GASTROENTEROLOGY]: 'Gastroenterology',
+    [AppointmentSpecialty.ORTHOPEDICS]: 'Orthopedics',
+    [AppointmentSpecialty.CARDIOLOGY]: 'Cardiology',
+    [AppointmentSpecialty.DERMATOLOGY]: 'Dermatology',
+    [AppointmentSpecialty.NEUROLOGY]: 'Neurology',
+    [AppointmentSpecialty.OPHTHALMOLOGY]: 'Ophthalmology',
+    [AppointmentSpecialty.PEDIATRICS]: 'Pediatrics',
+    [AppointmentSpecialty.PSYCHIATRY]: 'Psychiatry',
+    [AppointmentSpecialty.RADIOLOGY]: 'Radiology',
+    [AppointmentSpecialty.UROLOGY]: 'Urology',
+    [AppointmentSpecialty.GYNECOLOGY]: 'Gynecology',
+    [AppointmentSpecialty.ONCOLOGY]: 'Oncology',
+    [AppointmentSpecialty.PULMONOLOGY]: 'Pulmonology',
+    [AppointmentSpecialty.RHEUMATOLOGY]: 'Rheumatology',
+    [AppointmentSpecialty.ENDOCRINOLOGY]: 'Endocrinology',
+    [AppointmentSpecialty.NEPHROLOGY]: 'Nephrology',
+    [AppointmentSpecialty.GENERAL_PRACTICE]: 'General Practice',
+    [AppointmentSpecialty.EMERGENCY]: 'Emergency',
+    [AppointmentSpecialty.OTHER]: 'Other',
+  }
+  return names[specialty] || 'Medical'
+}
+
+// Helper function to format dates
+function formatDate(date: Date | string | undefined | null): string {
+  if (!date) return ''
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  return dateObj.toLocaleDateString('en-GB')
+}
+
+// Helper to calculate age from date of birth
+function calculateAge(dob: Date | string): number {
+  const birthDate = typeof dob === 'string' ? new Date(dob) : dob
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const monthDiff = today.getMonth() - birthDate.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  return age
+}
+
 function HealthSummaryPage() {
+  const { code } = Route.useSearch()
+  const [healthPass, setHealthPass] = useState<HealthPassPreviewDto | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch health pass data using access code
+  useEffect(() => {
+    const fetchHealthPass = async () => {
+      if (!code) {
+        setError('No access code provided')
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch(`/api/v1/health-passes/access/${code}`, {
+          method: 'GET',
+        })
+
+        const result = await response.json()
+
+        if (response.ok && result.success) {
+          setHealthPass(result.data)
+        } else {
+          setError(result.message || 'Failed to fetch health pass')
+        }
+      } catch (err) {
+        console.error('Error fetching health pass:', err)
+        setError('An error occurred while loading the HealthPass')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchHealthPass()
+  }, [code])
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-[#003AAB] border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500">Loading HealthPass...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !healthPass) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 px-6 text-center">
+          <p className="text-gray-500">{error || 'Failed to load HealthPass'}</p>
+          <p className="text-gray-400 text-sm">The link may have expired or is invalid.</p>
+        </div>
+      </div>
+    )
+  }
+
+  const age = healthPass.dateOfBirth ? calculateAge(healthPass.dateOfBirth) : ''
+  const specialtyName = getSpecialtyDisplayName(healthPass.appointmentSpecialty)
+
   return (
     <div className="min-h-dvh bg-white">
       {/* Header */}
@@ -46,7 +167,7 @@ function HealthSummaryPage() {
             color: '#385DA4',
           }}
         >
-          HealthPass
+          {specialtyName} HealthPass
         </h2>
 
         {/* Patient Name and Age */}
@@ -60,10 +181,10 @@ function HealthSummaryPage() {
             color: '#FFFFFF',
           }}
         >
-          Melissa Keyrouz, 27
+          {healthPass.patientName}{age ? `, ${age}` : ''}
         </h1>
 
-        {/* Generated Date */}
+        {/* Gender and DOB */}
         <p
           style={{
             fontFamily: 'Inter',
@@ -75,8 +196,24 @@ function HealthSummaryPage() {
             color: '#FFFFFF',
           }}
         >
-          Generated on 15/12/2025
+          {healthPass.gender ? `${healthPass.gender} • ` : ''}DOB: {formatDate(healthPass.dateOfBirth)}
         </p>
+
+        {/* Appointment info if available */}
+        {healthPass.appointmentDate && (
+          <p
+            style={{
+              marginTop: '8px',
+              fontFamily: 'Inter',
+              fontWeight: 500,
+              fontSize: '14px',
+              lineHeight: '150%',
+              color: '#76A5FF',
+            }}
+          >
+            Appointment: {formatDate(healthPass.appointmentDate)}
+          </p>
+        )}
       </div>
 
       {/* Medical Summary Section */}
@@ -97,78 +234,97 @@ function HealthSummaryPage() {
           Relevant Medical Summary
         </h2>
 
+        {/* AI Recommendations if available */}
+        {healthPass.aiRecommendations && (
+          <div
+            className="w-full bg-blue-50 rounded-xl p-4 mb-4"
+            style={{ border: '1px solid #003AAB20' }}
+          >
+            <h3 className="font-bold text-sm text-[#003AAB] mb-2">AI Summary</h3>
+            <p className="text-sm text-gray-700">{healthPass.aiRecommendations}</p>
+          </div>
+        )}
+
         {/* Documents section */}
-        <DocumentSection
-          title="Documents"
-          items={[
-            {
-              title: 'CBC Complete Blood Count',
-              date: '27 October 2025',
-              aiSummary: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
-            },
-          ]}
-        />
+        {healthPass.documents && healthPass.documents.length > 0 && (
+          <MedicalInfoSection
+            title="Documents"
+            showToggle={false}
+            icon={DocumentIcon}
+            items={healthPass.documents.map(doc => ({
+              title: doc.documentName,
+              description: doc.documentDate ? `Date: ${formatDate(doc.documentDate)}` : 'No date',
+              isRelevant: true,
+            }))}
+          />
+        )}
 
         {/* Medical conditions section */}
-        <MedicalInfoSection
-          title="Medical conditions"
-          showToggle={false}
-          icon={MedicalConditionIcon}
-          items={[
-            {
-              title: 'Eczema',
-              description: 'Diagnosed: 12/04/2018',
+        {healthPass.medicalConditions && healthPass.medicalConditions.length > 0 && (
+          <MedicalInfoSection
+            title="Medical conditions"
+            showToggle={false}
+            icon={MedicalConditionIcon}
+            items={healthPass.medicalConditions.map(condition => ({
+              title: condition.name,
+              description: condition.diagnosedDate ? `Diagnosed: ${formatDate(condition.diagnosedDate)}` : 'No diagnosis date',
               isRelevant: true,
-            },
-            {
-              title: 'Migraine',
-              description: 'Diagnosed: 12/04/2018',
-              isRelevant: true,
-            },
-          ]}
-        />
+            }))}
+          />
+        )}
 
         {/* Medications section */}
-        <MedicalInfoSection
-          title="Medications"
-          showToggle={false}
-          icon={MedicationIcon}
-          items={[
-            {
-              title: 'Paracetamol (Doliprane)',
-              description: 'Prescribed: 05/08/2020',
+        {healthPass.medications && healthPass.medications.length > 0 && (
+          <MedicalInfoSection
+            title="Medications"
+            showToggle={false}
+            icon={MedicationIcon}
+            items={healthPass.medications.map(medication => ({
+              title: medication.medicationName,
+              description: medication.dosageAmount ? `Dosage: ${medication.dosageAmount}` : 'No dosage info',
               isRelevant: true,
-            },
-          ]}
-        />
+            }))}
+          />
+        )}
 
         {/* Lifestyle section */}
-        <MedicalInfoSection
-          title="Lifestyle"
-          showToggle={false}
-          icon={LifeStyleIcon}
-          items={[
-            {
-              title: 'Non-smoker',
-              description: 'Updated: 01/01/2024',
+        {healthPass.lifestyleChoices && healthPass.lifestyleChoices.length > 0 && (
+          <MedicalInfoSection
+            title="Lifestyle"
+            showToggle={false}
+            icon={LifeStyleIcon}
+            items={healthPass.lifestyleChoices.map(lifestyle => ({
+              title: lifestyle.description,
+              description: lifestyle.category || 'Lifestyle factor',
               isRelevant: true,
-            },
-          ]}
-        />
+            }))}
+          />
+        )}
 
         {/* Allergies section */}
-        <MedicalInfoSection
-          title="Allergies"
-          showToggle={false}
-          icon={AllergyIcon}
-          items={[
-            {
-              title: 'Peanuts',
-              description: 'Diagnosed: 15/03/2015',
+        {healthPass.allergies && healthPass.allergies.length > 0 && (
+          <MedicalInfoSection
+            title="Allergies"
+            showToggle={false}
+            icon={AllergyIcon}
+            items={healthPass.allergies.map(allergy => ({
+              title: allergy.allergen,
+              description: allergy.severity ? `Severity: ${allergy.severity}` : 'No severity info',
               isRelevant: true,
-            },
-          ]}
-        />
+            }))}
+          />
+        )}
+
+        {/* Appointment notes if available */}
+        {healthPass.appointmentNotes && (
+          <div
+            className="w-full bg-gray-50 rounded-xl p-4 mt-4"
+            style={{ border: '1px solid #E5E5E5' }}
+          >
+            <h3 className="font-bold text-sm text-gray-700 mb-2">Appointment Notes</h3>
+            <p className="text-sm text-gray-600">{healthPass.appointmentNotes}</p>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ interface DocumentInfo {
   title: string
   date: string
   aiSummary: string
+  fileUrl?: string
 }
 
 interface DocumentSectionProps {
@@ -42,6 +43,7 @@ export function DocumentSection({ title, items }: DocumentSectionProps) {
           title={item.title}
           date={item.date}
           aiSummary={item.aiSummary}
+          fileUrl={item.fileUrl}
           isLast={index === items.length - 1}
         />
       ))}

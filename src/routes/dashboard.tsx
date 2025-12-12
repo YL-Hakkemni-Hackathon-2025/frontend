@@ -1,5 +1,6 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { UserFullSummaryDto } from '@/dtos/user.dto'
 import { UserHeader } from '@/components/dashboard/UserHeader'
 import { HealthPassCard } from '@/components/dashboard/HealthPassCard'
@@ -14,6 +15,7 @@ import { AllergyForm } from '@/components/dashboard/forms/AllergyForm'
 import { LifestyleForm } from '@/components/dashboard/forms/LifestyleForm'
 import { DocumentForm } from '@/components/dashboard/forms/DocumentForm'
 import { useDashboardForms } from '@/hooks/useDashboardForms'
+import { userAtom } from '@/atoms/user.atom'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context }) => {
@@ -27,11 +29,40 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false)
+  const [user, setUser] = useState<UserFullSummaryDto | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
   const navigate = useNavigate()
+  const authData = useAtomValue(userAtom)
+  const setAuthData = useSetAtom(userAtom)
+
+  // Function to refresh user data
+  const refreshUserData = async () => {
+    if (!authData?.accessToken) return
+
+    try {
+      const response = await fetch('/api/v1/users/summary', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authData.accessToken}`,
+        },
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        setUser(result.data)
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error)
+    }
+  }
 
   const {
     activeForm,
     setActiveForm,
+    isUploading,
+    uploadError,
     medicalConditionForm,
     setMedicalConditionForm,
     isMedicalConditionValid,
@@ -53,104 +84,80 @@ function DashboardPage() {
     handleFileChange,
     handleRemoveFile,
     handleSave,
-  } = useDashboardForms()
+  } = useDashboardForms(authData?.accessToken, refreshUserData)
+
+  // Fetch user summary on mount
+  useEffect(() => {
+    const fetchUserSummary = async () => {
+      if (!authData?.accessToken) {
+        navigate({ to: '/onboarding' })
+        return
+      }
+
+      try {
+        const response = await fetch('/api/v1/users/summary', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authData.accessToken}`,
+          },
+        })
+
+        const result = await response.json()
+
+        if (response.ok && result.success) {
+          setUser(result.data)
+        } else {
+          console.error('Failed to fetch user summary:', result)
+        }
+      } catch (error) {
+        console.error('Error fetching user summary:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchUserSummary()
+  }, [authData, navigate])
 
   const handleLogout = () => {
-    // TODO: Clear auth token
+    setAuthData(undefined)
     navigate({ to: '/onboarding' })
   }
 
-  // TODO: Replace with actual user data from API/state
-  const user: UserFullSummaryDto = {
-    id: '1',
-    firstName: 'Melissa',
-    lastName: 'Doe',
-    fullName: 'Melissa Doe',
-    governmentId: '123456789',
-    dateOfBirth: new Date('1990-01-01'),
-    birthPlace: 'Beirut',
-    medicalConditions: [
-      {
-        id: '1',
-        userId: '1',
-        name: 'Eczema',
-        diagnosedDate: new Date('2018-04-12'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: '2',
-        userId: '1',
-        name: 'Migraine',
-        diagnosedDate: new Date('2018-04-12'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    medications: [
-      {
-        id: '1',
-        userId: '1',
-        medicationName: 'Paracetamol (Doliprane)',
-        dosageAmount: '500mg',
-        frequency: 'AS_NEEDED' as any,
-        startDate: new Date('2020-08-05'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    allergies: [
-      {
-        id: '1',
-        userId: '1',
-        allergen: 'Peanuts',
-        type: 'FOOD' as any,
-        diagnosedDate: new Date('2015-03-15'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    lifestyles: [
-      {
-        id: '1',
-        userId: '1',
-        category: 'SMOKING' as any,
-        description: 'Non-smoker',
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date('2024-01-01'),
-      },
-    ],
-    documents: [
-      {
-        id: '1',
-        userId: '1',
-        originalFileName: 'cbc-results.pdf',
-        documentName: 'CBC Complete Blood Count',
-        documentType: 'LAB_RESULT' as any,
-        fileUrl: 'https://example.com/cbc.pdf',
-        mimeType: 'application/pdf',
-        documentDate: new Date('2025-10-27'),
-        notes: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
-        isAiProcessed: true,
-        isConfirmed: true,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
+  const hasHealthData = user ? (
+    (user.medicalConditions?.length ?? 0) > 0 ||
+    (user.medications?.length ?? 0) > 0 ||
+    (user.allergies?.length ?? 0) > 0 ||
+    (user.lifestyles?.length ?? 0) > 0 ||
+    (user.documents?.length ?? 0) > 0
+  ) : false
+
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500">Loading your health data...</p>
+        </div>
+      </div>
+    )
   }
 
-  const hasHealthData =
-    user.medicalConditions.length > 0 ||
-    user.medications.length > 0 ||
-    user.allergies.length > 0 ||
-    user.lifestyles.length > 0 ||
-    user.documents.length > 0
+  if (!user) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-gray-500">Failed to load user data</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-black text-white rounded-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-dvh bg-white relative flex flex-col">
@@ -159,8 +166,8 @@ function DashboardPage() {
 
       {hasHealthData && (
         <>
-          <SearchBar />
-          <HealthDataSections user={user} />
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          <HealthDataSections user={user} searchQuery={searchQuery} />
         </>
       )}
 
@@ -215,6 +222,8 @@ function DashboardPage() {
         isOpen={activeForm === 'document'}
         form={documentForm}
         isValid={isDocumentValid}
+        isUploading={isUploading}
+        uploadError={uploadError}
         pdfPreviewUrl={pdfPreviewUrl}
         fileInputRef={fileInputRef}
         onFormChange={setDocumentForm}

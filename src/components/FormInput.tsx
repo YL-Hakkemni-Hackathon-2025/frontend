@@ -5,9 +5,10 @@ interface FormInputProps {
   placeholder?: string
   value: string
   onChange: (value: string) => void
+  disabled?: boolean
 }
 
-export function FormInput({ label, optional = false, type = 'text', placeholder, value, onChange }: FormInputProps) {
+export function FormInput({ label, optional = false, type = 'text', placeholder, value, onChange, disabled = false }: FormInputProps) {
   return (
     <div>
       <label
@@ -18,7 +19,7 @@ export function FormInput({ label, optional = false, type = 'text', placeholder,
           lineHeight: '121%',
           letterSpacing: '0%',
           verticalAlign: 'middle',
-          color: '#000000',
+          color: disabled ? '#9CA3AF' : '#000000',
         }}
       >
         <span style={{ fontWeight: 900 }}>{label}</span>
@@ -29,7 +30,8 @@ export function FormInput({ label, optional = false, type = 'text', placeholder,
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 rounded-full outline-none border-2 border-white focus:border-black"
+        disabled={disabled}
+        className={`w-full px-4 rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
         style={{
           height: '44px',
           fontFamily: 'Inter',

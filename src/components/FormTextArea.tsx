@@ -5,9 +5,10 @@ interface FormTextAreaProps {
   value: string
   onChange: (value: string) => void
   rows?: number
+  disabled?: boolean
 }
 
-export function FormTextArea({ label, optional = false, placeholder, value, onChange, rows = 4 }: FormTextAreaProps) {
+export function FormTextArea({ label, optional = false, placeholder, value, onChange, rows = 4, disabled = false }: FormTextAreaProps) {
   return (
     <div>
       <label
@@ -18,7 +19,7 @@ export function FormTextArea({ label, optional = false, placeholder, value, onCh
           lineHeight: '121%',
           letterSpacing: '0%',
           verticalAlign: 'middle',
-          color: '#000000',
+          color: disabled ? '#9CA3AF' : '#000000',
         }}
       >
         <span style={{ fontWeight: 900 }}>{label}</span>
@@ -28,7 +29,8 @@ export function FormTextArea({ label, optional = false, placeholder, value, onCh
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 rounded-3xl outline-none border-2 border-white focus:border-black resize-none"
+        disabled={disabled}
+        className={`w-full px-4 py-3 rounded-3xl outline-none border-2 border-white focus:border-black resize-none ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
         rows={rows}
         style={{
           fontFamily: 'Inter',

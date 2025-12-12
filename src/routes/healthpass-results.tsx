@@ -1,62 +1,171 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { motion } from 'motion/react'
+import { useState, useEffect } from 'react'
+import { useAtomValue } from 'jotai'
 import { HealthPassCard } from '@/components/HealthPassCard'
 import AppleWalletIcon from '@/assets/AppleWallet.svg'
 import UserDataIcon from '@/assets/UserDataIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
-import { UserFullSummaryDto } from '@/dtos/user.dto'
+import { userAtom } from '@/atoms/user.atom'
+import { userDetailsAtom } from '@/atoms/userDetails.atom'
+import { HealthPassResponseDto } from '@/dtos/health-pass.dto'
+import { AppointmentSpecialty } from '@/utils/global.types'
+
+interface SearchParams {
+  healthPassId?: string
+}
 
 export const Route = createFileRoute('/healthpass-results')({
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    return {
+      healthPassId: search.healthPassId as string | undefined,
+    }
+  },
+  beforeLoad: ({ context }) => {
+    if (!context.isAuthenticated) {
+      throw redirect({ to: '/onboarding' })
+    }
+  },
   component: HealthPassResultsPage,
 })
 
-function HealthPassResultsPage() {
-  // TODO: Replace with actual user data from API/state
-  const user: UserFullSummaryDto = {
-    id: '1',
-    firstName: 'Melissa',
-    lastName: 'Keyrouz',
-    fullName: 'Ms. Melissa Keyrouz',
-    governmentId: '123456789',
-    dateOfBirth: new Date('1990-05-30'),
-    birthPlace: 'Beirut',
-    medicalConditions: [
-      {
-        id: '1',
-        userId: '1',
-        name: 'Eczema',
-        diagnosedDate: new Date('2018-04-12'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: '2',
-        userId: '1',
-        name: 'Migraine',
-        diagnosedDate: new Date('2018-04-12'),
-        isActive: false,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    medications: [
-      {
-        id: '1',
-        userId: '1',
-        medicationName: 'Paracetamol (Doliprane)',
-        dosageAmount: '500mg',
-        frequency: 'AS_NEEDED' as any,
-        startDate: new Date('2020-08-05'),
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ],
-    allergies: [],
-    lifestyles: [],
-    documents: [],
+// Helper to get display name for specialty
+function getSpecialtyDisplayName(specialty: AppointmentSpecialty): string {
+  const names: Record<AppointmentSpecialty, string> = {
+    [AppointmentSpecialty.GASTROENTEROLOGY]: 'Gastroenterology',
+    [AppointmentSpecialty.ORTHOPEDICS]: 'Orthopedics',
+    [AppointmentSpecialty.CARDIOLOGY]: 'Cardiology',
+    [AppointmentSpecialty.DERMATOLOGY]: 'Dermatology',
+    [AppointmentSpecialty.NEUROLOGY]: 'Neurology',
+    [AppointmentSpecialty.OPHTHALMOLOGY]: 'Ophthalmology',
+    [AppointmentSpecialty.PEDIATRICS]: 'Pediatrics',
+    [AppointmentSpecialty.PSYCHIATRY]: 'Psychiatry',
+    [AppointmentSpecialty.RADIOLOGY]: 'Radiology',
+    [AppointmentSpecialty.UROLOGY]: 'Urology',
+    [AppointmentSpecialty.GYNECOLOGY]: 'Gynecology',
+    [AppointmentSpecialty.ONCOLOGY]: 'Oncology',
+    [AppointmentSpecialty.PULMONOLOGY]: 'Pulmonology',
+    [AppointmentSpecialty.RHEUMATOLOGY]: 'Rheumatology',
+    [AppointmentSpecialty.ENDOCRINOLOGY]: 'Endocrinology',
+    [AppointmentSpecialty.NEPHROLOGY]: 'Nephrology',
+    [AppointmentSpecialty.GENERAL_PRACTICE]: 'General Practice',
+    [AppointmentSpecialty.EMERGENCY]: 'Emergency',
+    [AppointmentSpecialty.OTHER]: 'Other',
   }
+  return names[specialty] || 'Medical'
+}
+
+// Helper function to format dates
+function formatDate(date: Date | string | undefined | null): string {
+  if (!date) return ''
+  const dateObj = typeof date === 'string' ? new Date(date) : date
+  return dateObj.toLocaleDateString('en-GB')
+}
+
+function HealthPassResultsPage() {
+  const { healthPassId } = Route.useSearch()
+  const navigate = useNavigate()
+  const authData = useAtomValue(userAtom)
+  const userDetails = useAtomValue(userDetailsAtom)
+
+  const [healthPass, setHealthPass] = useState<HealthPassResponseDto | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch health pass data
+  useEffect(() => {
+    const fetchHealthPass = async () => {
+      if (!healthPassId || !authData?.accessToken) {
+        setError('Invalid health pass ID or not authenticated')
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        const response = await fetch(`/api/v1/health-passes/${healthPassId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${authData.accessToken}`,
+          },
+        })
+
+        const result = await response.json()
+
+        if (response.ok && result.success) {
+          setHealthPass(result.data)
+        } else {
+          setError(result.message || 'Failed to fetch health pass')
+        }
+      } catch (err) {
+        console.error('Error fetching health pass:', err)
+        setError('An error occurred while loading your HealthPass')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchHealthPass()
+  }, [healthPassId, authData])
+
+  // Toggle item handler - creates a handler for a specific item type
+  const createToggleHandler = (itemType: 'medicalCondition' | 'medication' | 'allergy' | 'lifestyle' | 'document') => {
+    return async (itemId: string, isEnabled: boolean) => {
+      if (!healthPassId || !authData?.accessToken) {
+        throw new Error('Not authenticated')
+      }
+
+      const response = await fetch(`/api/v1/health-passes/${healthPassId}/toggle-item`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.accessToken}`,
+        },
+        body: JSON.stringify({
+          itemType,
+          itemId,
+          isEnabled,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to toggle item')
+      }
+    }
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500">Loading your HealthPass...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (error || !healthPass) {
+    return (
+      <div className="min-h-dvh bg-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 px-6 text-center">
+          <p className="text-gray-500">{error || 'Failed to load HealthPass'}</p>
+          <button
+            onClick={() => navigate({ to: '/dashboard' })}
+            className="px-4 py-2 bg-black text-white rounded-lg"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const specialtyName = getSpecialtyDisplayName(healthPass.appointmentSpecialty)
+
   return (
     <div className="relative min-h-dvh bg-white">
       {/* Top curved section with gradient - 30% of screen - BACKGROUND */}
@@ -72,6 +181,7 @@ function HealthPassResultsPage() {
 
       {/* Close button - top right */}
       <button
+        onClick={() => navigate({ to: '/dashboard' })}
         className="absolute top-6 right-6 w-[45px] h-[45px] rounded-full flex items-center justify-center z-20"
         style={{
           background: '#FFFFFF80',
@@ -96,7 +206,7 @@ function HealthPassResultsPage() {
             letterSpacing: '0%',
           }}
         >
-          Dermatology HealthPass
+          {specialtyName} HealthPass
         </h1>
 
         {/* Subtitle */}
@@ -123,9 +233,11 @@ function HealthPassResultsPage() {
           className="w-full mb-8"
         >
           <HealthPassCard
-            name={user.fullName}
-            dob={user.dateOfBirth.toLocaleDateString('en-GB')}
+            name={userDetails?.fullName || authData?.user?.fullName || ''}
+            dob={formatDate(userDetails?.dateOfBirth)}
             showButton={true}
+            qrCode={healthPass.qrCode}
+            accessCode={healthPass.accessCode}
           />
         </motion.div>
 
@@ -213,26 +325,72 @@ function HealthPassResultsPage() {
       </div>
 
       {/* Medical conditions section */}
-      {user.medicalConditions.length > 0 && (
+      {healthPass.medicalConditions.length > 0 && (
         <MedicalInfoSection
           title="Medical conditions"
-          items={user.medicalConditions.map(condition => ({
-            title: condition.name,
-            description: condition.isActive ? 'Relevant to dermatology care' : 'Not relevant to dermatology care',
-            isRelevant: condition.isActive,
+          items={healthPass.medicalConditions.map(item => ({
+            id: item.data.id,
+            title: item.data.name,
+            description: item.aiRecommendation || (item.isRelevant ? `Relevant to ${specialtyName.toLowerCase()} care` : `Not relevant to ${specialtyName.toLowerCase()} care`),
+            isRelevant: item.isRelevant,
           }))}
+          onToggle={createToggleHandler('medicalCondition')}
         />
       )}
 
       {/* Medications section */}
-      {user.medications.length > 0 && (
+      {healthPass.medications.length > 0 && (
         <MedicalInfoSection
           title="Medications"
-          items={user.medications.map(medication => ({
-            title: medication.medicationName,
-            description: medication.isActive ? 'Relevant for skin treatment decisions' : 'Not currently active',
-            isRelevant: medication.isActive,
+          items={healthPass.medications.map(item => ({
+            id: item.data.id,
+            title: item.data.medicationName,
+            description: item.aiRecommendation || (item.isRelevant ? 'Relevant for treatment decisions' : 'Not currently relevant'),
+            isRelevant: item.isRelevant,
           }))}
+          onToggle={createToggleHandler('medication')}
+        />
+      )}
+
+      {/* Allergies section */}
+      {healthPass.allergies.length > 0 && (
+        <MedicalInfoSection
+          title="Allergies"
+          items={healthPass.allergies.map(item => ({
+            id: item.data.id,
+            title: item.data.allergen,
+            description: item.aiRecommendation || (item.isRelevant ? 'Important for treatment safety' : 'Not currently relevant'),
+            isRelevant: item.isRelevant,
+          }))}
+          onToggle={createToggleHandler('allergy')}
+        />
+      )}
+
+      {/* Lifestyle section */}
+      {healthPass.lifestyles.length > 0 && (
+        <MedicalInfoSection
+          title="Lifestyle"
+          items={healthPass.lifestyles.map(item => ({
+            id: item.data.id,
+            title: item.data.description,
+            description: item.aiRecommendation || (item.isRelevant ? 'Relevant lifestyle factor' : 'Not currently relevant'),
+            isRelevant: item.isRelevant,
+          }))}
+          onToggle={createToggleHandler('lifestyle')}
+        />
+      )}
+
+      {/* Documents section */}
+      {healthPass.documents.length > 0 && (
+        <MedicalInfoSection
+          title="Documents"
+          items={healthPass.documents.map(item => ({
+            id: item.data.id,
+            title: item.data.documentName,
+            description: item.aiRecommendation || (item.isRelevant ? 'Relevant document' : 'Not currently relevant'),
+            isRelevant: item.isRelevant,
+          }))}
+          onToggle={createToggleHandler('document')}
         />
       )}
       </div>
