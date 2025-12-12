@@ -41,7 +41,7 @@ function OnboardingPage() {
 
   return (
     <div
-      className="h-screen bg-cover bg-[25%_50%] flex flex-col items-center"
+      className="min-h-[100dvh] bg-cover bg-[25%_50%] flex flex-col items-center"
       style={{ backgroundImage: `linear-gradient(to bottom, transparent, #000000), url(${backgroundImg})` }}
     >
         <div className={"flex flex-col w-[92.5%] flex-1 items-center justify-between"}>
