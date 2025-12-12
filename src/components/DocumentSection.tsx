@@ -1,19 +1,17 @@
-import { MedicalConditionItem } from './MedicalConditionItem'
+import { DocumentItem } from './DocumentItem'
 
-interface MedicalInfoItem {
+interface DocumentInfo {
   title: string
-  description: string
-  isRelevant: boolean
+  date: string
+  aiSummary: string
 }
 
-interface MedicalInfoSectionProps {
+interface DocumentSectionProps {
   title: string
-  items: MedicalInfoItem[]
-  showToggle?: boolean
-  icon?: string
+  items: DocumentInfo[]
 }
 
-export function MedicalInfoSection({ title, items, showToggle = true, icon }: MedicalInfoSectionProps) {
+export function DocumentSection({ title, items }: DocumentSectionProps) {
   return (
     <div
       className="w-full bg-white rounded-xl flex flex-col px-6"
@@ -33,21 +31,18 @@ export function MedicalInfoSection({ title, items, showToggle = true, icon }: Me
           letterSpacing: '0%',
           verticalAlign: 'middle',
           color: '#B6B6B6',
-          // marginBottom: '12px',
         }}
       >
         {title}
       </h3>
 
       {items.map((item, index) => (
-        <MedicalConditionItem
+        <DocumentItem
           key={index}
           title={item.title}
-          description={item.description}
-          isRelevant={item.isRelevant}
+          date={item.date}
+          aiSummary={item.aiSummary}
           isLast={index === items.length - 1}
-          showToggle={showToggle}
-          icon={icon}
         />
       ))}
     </div>
