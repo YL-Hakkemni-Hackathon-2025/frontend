@@ -5,8 +5,8 @@ import backgroundImg from '@/assets/onboarding/background.png'
 import logoImg from '@/assets/onboarding/logo.svg'
 import lebanonFlagImg from '@/assets/onboarding/lebanon.svg'
 import arrowForwardImg from '@/assets/onboarding/arrow_forward.svg'
-import qrTemplate from '@/assets/onboarding/qr_template.png'
 import { ScannerModal } from '@/components/ScannerModal'
+import { HealthPassCard } from '@/components/HealthPassCard'
 
 export const Route = createFileRoute('/onboarding')({
   beforeLoad: ({ context }) => {
@@ -98,24 +98,8 @@ function OnboardingPage() {
               </p>
 
               {/* Card with layered boxes */}
-              <div className="relative w-full mb-6">
-                {/* Background rotated box */}
-                <div
-                  className="absolute inset-0 bg-[#76A5FF] rounded-2xl h-44 -rotate-[5deg] shadow-[0_0_30px_0_#385DA4]"
-                />
-                {/* Foreground box */}
-                <div
-                  className="relative bg-[#003AAB] rounded-2xl h-44 shadow-[0_0_30px_0_#385DA4] flex flex-row justify-between items-center px-8"
-                >
-                    <div className={"flex flex-col"}>
-                        <p className={"font-black text-[#3C7BF5]"}>Name</p>
-                        <p className={"font-bold text-white"}>Melissa Keyrouz</p>
-                        <p className={"font-black text-[#3C7BF5] mt-2"}>DOB</p>
-                        <p className={"font-bold text-white"}>30/05/1990</p>
-                    </div>
-
-                    <img src={qrTemplate} alt={"qrcode"} className={"rounded-xl"}/>
-                </div>
+              <div className="mb-6">
+                <HealthPassCard />
               </div>
 
               <button
