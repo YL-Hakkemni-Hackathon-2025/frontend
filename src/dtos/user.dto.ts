@@ -1,6 +1,11 @@
 import { IsString, IsOptional, IsEmail, IsEnum, IsDate } from 'class-validator';
 import { Type } from 'class-transformer';
 import {Gender} from "@/utils/global.types.ts";
+import {MedicalConditionResponseDto} from "@/dtos/medical-condition.dto.ts";
+import {MedicationResponseDto} from "@/dtos/medication.dto.ts";
+import {AllergyResponseDto} from "@/dtos/allergy.dto.ts";
+import {LifestyleResponseDto} from "@/dtos/lifestyle.dto.ts";
+import {DocumentResponseDto} from "@/dtos/document.dto.ts";
 
 // Request DTOs
 export class CreateUserDto {
@@ -83,3 +88,18 @@ export class UserSummaryDto {
   gender?: Gender;
 }
 
+export class UserFullSummaryDto {
+    id!: string;
+    firstName!: string;
+    lastName!: string;
+    fullName!: string;
+    governmentId!: string;
+    dateOfBirth!: Date;
+    birthPlace!: string;
+    gender?: Gender;
+    medicalConditions!: MedicalConditionResponseDto[];
+    medications!: MedicationResponseDto[];
+    allergies!: AllergyResponseDto[];
+    lifestyles!: LifestyleResponseDto[];
+    documents!: DocumentResponseDto[];
+}

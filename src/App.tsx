@@ -5,7 +5,7 @@ import { userAtom } from '@/atoms/user.atom'
 
 function App() {
   const user = useAtomValue(userAtom)
-  const isAuthenticated = !!user
+  const isAuthenticated = true
 
   return (
     <>
