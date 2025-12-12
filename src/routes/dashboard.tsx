@@ -65,9 +65,10 @@ function DashboardPage() {
       {
         id: '1',
         userId: '1',
-        name: 'Paracetamol (Doliprane)',
-        dosage: '500mg',
-        prescribedDate: new Date('2020-08-05'),
+        medicationName: 'Paracetamol (Doliprane)',
+        dosageAmount: '500mg',
+        frequency: 'AS_NEEDED' as any,
+        startDate: new Date('2020-08-05'),
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -77,7 +78,8 @@ function DashboardPage() {
       {
         id: '1',
         userId: '1',
-        name: 'Peanuts',
+        allergen: 'Peanuts',
+        type: 'FOOD' as any,
         diagnosedDate: new Date('2015-03-15'),
         isActive: true,
         createdAt: new Date(),
@@ -88,8 +90,8 @@ function DashboardPage() {
       {
         id: '1',
         userId: '1',
-        type: 'Smoking',
-        value: 'Non-smoker',
+        category: 'SMOKING' as any,
+        description: 'Non-smoker',
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date('2024-01-01'),
@@ -99,10 +101,15 @@ function DashboardPage() {
       {
         id: '1',
         userId: '1',
-        title: 'CBC Complete Blood Count',
+        originalFileName: 'cbc-results.pdf',
+        documentName: 'CBC Complete Blood Count',
+        documentType: 'LAB_RESULT' as any,
         fileUrl: 'https://example.com/cbc.pdf',
-        uploadedDate: new Date('2025-10-27'),
-        aiSummary: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
+        mimeType: 'application/pdf',
+        documentDate: new Date('2025-10-27'),
+        notes: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
+        isAiProcessed: true,
+        isConfirmed: true,
         isActive: true,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -203,9 +210,9 @@ function DashboardPage() {
               <DocumentSection
                 title="Documents"
                 items={user.documents.map(doc => ({
-                  title: doc.title,
-                  date: doc.uploadedDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) || '',
-                  aiSummary: doc.aiSummary || '',
+                  title: doc.documentName,
+                  date: doc.documentDate?.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) || '',
+                  aiSummary: doc.notes || '',
                 }))}
               />
             )}
@@ -233,9 +240,9 @@ function DashboardPage() {
                 showToggle={false}
                 icon={MedicationIcon}
                 items={user.medications.map(medication => ({
-                  title: medication.name,
-                  description: medication.prescribedDate
-                    ? `Prescribed: ${medication.prescribedDate.toLocaleDateString('en-GB')}`
+                  title: medication.medicationName,
+                  description: medication.startDate
+                    ? `Prescribed: ${medication.startDate.toLocaleDateString('en-GB')}`
                     : 'No prescription date',
                   isRelevant: true,
                 }))}
@@ -249,7 +256,7 @@ function DashboardPage() {
                 showToggle={false}
                 icon={LifeStyleIcon}
                 items={user.lifestyles.map(lifestyle => ({
-                  title: lifestyle.value,
+                  title: lifestyle.description,
                   description: lifestyle.updatedAt
                     ? `Updated: ${lifestyle.updatedAt.toLocaleDateString('en-GB')}`
                     : 'No update date',
@@ -265,7 +272,7 @@ function DashboardPage() {
                 showToggle={false}
                 icon={AllergyIcon}
                 items={user.allergies.map(allergy => ({
-                  title: allergy.name,
+                  title: allergy.allergen,
                   description: allergy.diagnosedDate
                     ? `Diagnosed: ${allergy.diagnosedDate.toLocaleDateString('en-GB')}`
                     : 'No diagnosis date',
