@@ -63,6 +63,11 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
           autoCaptureEnabled: true,
           autoCaptureSensitivity: 1.0, // Maximum speed - immediate capture
           autoCaptureDelay: 0, // No delay
+          scannerConfiguration: {
+              parameters: {
+                  ignoreOrientationMismatch: true,
+              }
+          },
           text: {
             hint: {
               OK: 'Ready to capture',
