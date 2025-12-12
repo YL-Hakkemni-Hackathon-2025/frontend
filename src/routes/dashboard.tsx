@@ -16,6 +16,7 @@ import { LifestyleForm } from '@/components/dashboard/forms/LifestyleForm'
 import { DocumentForm } from '@/components/dashboard/forms/DocumentForm'
 import { useDashboardForms } from '@/hooks/useDashboardForms'
 import { userAtom } from '@/atoms/user.atom'
+import { apiUrl } from '@/utils/api'
 
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context }) => {
@@ -41,7 +42,7 @@ function DashboardPage() {
     if (!authData?.accessToken) return
 
     try {
-      const response = await fetch('/api/v1/users/summary', {
+      const response = await fetch(apiUrl('/api/v1/users/summary'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authData.accessToken}`,
@@ -95,7 +96,7 @@ function DashboardPage() {
       }
 
       try {
-        const response = await fetch('/api/v1/users/summary', {
+        const response = await fetch(apiUrl('/api/v1/users/summary'), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authData.accessToken}`,

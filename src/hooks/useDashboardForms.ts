@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { apiUrl } from '@/utils/api'
 
 export type FormType = 'medical-condition' | 'medication' | 'allergy' | 'lifestyle' | 'document' | null
 
@@ -68,7 +69,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
       const formData = new FormData()
       formData.append('file', file)
 
-      const response = await fetch('/api/v1/documents/upload', {
+      const response = await fetch(apiUrl('/api/v1/documents/upload'), {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
@@ -210,7 +211,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
             Object.entries(confirmBody).filter(([_, v]) => v !== undefined && v !== '')
           )
 
-          const confirmResponse = await fetch(`/api/v1/documents/${documentForm.documentId}/confirm`, {
+          const confirmResponse = await fetch(apiUrl(`/api/v1/documents/${documentForm.documentId}/confirm`), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -242,7 +243,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
         Object.entries(body).filter(([_, v]) => v !== undefined && v !== '')
       )
 
-      const response = await fetch(endpoint, {
+      const response = await fetch(apiUrl(endpoint), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

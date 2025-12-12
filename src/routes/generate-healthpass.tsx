@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAtomValue } from 'jotai'
 import { userAtom } from '@/atoms/user.atom'
 import { AppointmentSpecialty } from '@/utils/global.types'
+import { apiUrl } from '@/utils/api'
 
 interface SearchParams {
   specialty?: AppointmentSpecialty
@@ -83,7 +84,7 @@ function GenerateHealthPassPage() {
       }
 
       try {
-        const response = await fetch('/api/v1/health-passes', {
+        const response = await fetch(apiUrl('/api/v1/health-passes'), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

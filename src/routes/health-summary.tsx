@@ -10,6 +10,7 @@ import DocumentIcon from '@/assets/DocumentIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
 import { HealthPassPreviewDto } from '@/dtos/health-pass.dto'
 import { AppointmentSpecialty } from '@/utils/global.types'
+import { apiUrl } from '@/utils/api'
 
 interface SearchParams {
   code?: string
@@ -85,7 +86,7 @@ function HealthSummaryPage() {
       }
 
       try {
-        const response = await fetch(`/api/v1/health-passes/access/${code}`, {
+        const response = await fetch(apiUrl(`/api/v1/health-passes/access/${code}`), {
           method: 'GET',
         })
 

@@ -10,6 +10,7 @@ import { userAtom } from '@/atoms/user.atom'
 import { userDetailsAtom } from '@/atoms/userDetails.atom'
 import { HealthPassResponseDto } from '@/dtos/health-pass.dto'
 import { AppointmentSpecialty } from '@/utils/global.types'
+import { apiUrl } from '@/utils/api'
 
 interface SearchParams {
   healthPassId?: string
@@ -82,7 +83,7 @@ function HealthPassResultsPage() {
       }
 
       try {
-        const response = await fetch(`/api/v1/health-passes/${healthPassId}`, {
+        const response = await fetch(apiUrl(`/api/v1/health-passes/${healthPassId}`), {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${authData.accessToken}`,
@@ -114,7 +115,7 @@ function HealthPassResultsPage() {
         throw new Error('Not authenticated')
       }
 
-      const response = await fetch(`/api/v1/health-passes/${healthPassId}/toggle-item`, {
+      const response = await fetch(apiUrl(`/api/v1/health-passes/${healthPassId}/toggle-item`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
