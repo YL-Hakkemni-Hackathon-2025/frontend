@@ -1,7 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import AppStoreDownload from '@/assets/AppStoreDownload.svg'
 import PlayStoreDownload from '@/assets/PlayStoreDownload.svg'
+import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
+import MedicationIcon from '@/assets/MedicationIcon.svg'
+import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
+import AllergyIcon from '@/assets/AllergyIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
+import { DocumentSection } from '@/components/DocumentSection'
 
 export const Route = createFileRoute('/health-summary')({
   component: HealthSummaryPage,
@@ -75,7 +80,7 @@ function HealthSummaryPage() {
       </div>
 
       {/* Medical Summary Section */}
-      <div className="px-6">
+      <div className="px-6 pb-16">
         <h2
           style={{
             marginTop: '22px',
@@ -92,19 +97,33 @@ function HealthSummaryPage() {
           Relevant Medical Summary
         </h2>
 
+        {/* Documents section */}
+        <DocumentSection
+          title="Documents"
+          items={[
+            {
+              title: 'CBC Complete Blood Count',
+              date: '27 October 2025',
+              aiSummary: 'CBC shows normal white cells and hemoglobin. Slightly low iron markers noted, consistent with mild iron deficiency.',
+            },
+          ]}
+        />
+
         {/* Medical conditions section */}
         <MedicalInfoSection
           title="Medical conditions"
+          showToggle={false}
+          icon={MedicalConditionIcon}
           items={[
             {
               title: 'Eczema',
-              description: 'Relevant to dermatology care',
+              description: 'Diagnosed: 12/04/2018',
               isRelevant: true,
             },
             {
               title: 'Migraine',
-              description: 'Not relevant to dermatology care',
-              isRelevant: false,
+              description: 'Diagnosed: 12/04/2018',
+              isRelevant: true,
             },
           ]}
         />
@@ -112,10 +131,40 @@ function HealthSummaryPage() {
         {/* Medications section */}
         <MedicalInfoSection
           title="Medications"
+          showToggle={false}
+          icon={MedicationIcon}
           items={[
             {
               title: 'Paracetamol (Doliprane)',
-              description: 'Relevant for skin treatment decisions',
+              description: 'Prescribed: 05/08/2020',
+              isRelevant: true,
+            },
+          ]}
+        />
+
+        {/* Lifestyle section */}
+        <MedicalInfoSection
+          title="Lifestyle"
+          showToggle={false}
+          icon={LifeStyleIcon}
+          items={[
+            {
+              title: 'Non-smoker',
+              description: 'Updated: 01/01/2024',
+              isRelevant: true,
+            },
+          ]}
+        />
+
+        {/* Allergies section */}
+        <MedicalInfoSection
+          title="Allergies"
+          showToggle={false}
+          icon={AllergyIcon}
+          items={[
+            {
+              title: 'Peanuts',
+              description: 'Diagnosed: 15/03/2015',
               isRelevant: true,
             },
           ]}

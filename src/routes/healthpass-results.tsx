@@ -4,12 +4,59 @@ import { HealthPassCard } from '@/components/HealthPassCard'
 import AppleWalletIcon from '@/assets/AppleWallet.svg'
 import UserDataIcon from '@/assets/UserDataIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
+import { UserFullSummaryDto } from '@/dtos/user.dto'
 
 export const Route = createFileRoute('/healthpass-results')({
   component: HealthPassResultsPage,
 })
 
 function HealthPassResultsPage() {
+  // TODO: Replace with actual user data from API/state
+  const user: UserFullSummaryDto = {
+    id: '1',
+    firstName: 'Melissa',
+    lastName: 'Keyrouz',
+    fullName: 'Ms. Melissa Keyrouz',
+    governmentId: '123456789',
+    dateOfBirth: new Date('1990-05-30'),
+    birthPlace: 'Beirut',
+    medicalConditions: [
+      {
+        id: '1',
+        userId: '1',
+        name: 'Eczema',
+        diagnosedDate: new Date('2018-04-12'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: '2',
+        userId: '1',
+        name: 'Migraine',
+        diagnosedDate: new Date('2018-04-12'),
+        isActive: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    medications: [
+      {
+        id: '1',
+        userId: '1',
+        medicationName: 'Paracetamol (Doliprane)',
+        dosageAmount: '500mg',
+        frequency: 'AS_NEEDED' as any,
+        startDate: new Date('2020-08-05'),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ],
+    allergies: [],
+    lifestyles: [],
+    documents: [],
+  }
   return (
     <div className="relative min-h-dvh bg-white">
       {/* Top curved section with gradient - 30% of screen - BACKGROUND */}
@@ -76,8 +123,8 @@ function HealthPassResultsPage() {
           className="w-full mb-8"
         >
           <HealthPassCard
-            name="Ms. Melissa Keyrouz"
-            dob="30/05/1990"
+            name={user.fullName}
+            dob={user.dateOfBirth.toLocaleDateString('en-GB')}
             showButton={true}
           />
         </motion.div>
@@ -166,33 +213,28 @@ function HealthPassResultsPage() {
       </div>
 
       {/* Medical conditions section */}
-      <MedicalInfoSection
-        title="Medical conditions"
-        items={[
-          {
-            title: 'Eczema',
-            description: 'Relevant to dermatology care',
-            isRelevant: true,
-          },
-          {
-            title: 'Migraine',
-            description: 'Not relevant to dermatology care',
-            isRelevant: false,
-          },
-        ]}
-      />
+      {user.medicalConditions.length > 0 && (
+        <MedicalInfoSection
+          title="Medical conditions"
+          items={user.medicalConditions.map(condition => ({
+            title: condition.name,
+            description: condition.isActive ? 'Relevant to dermatology care' : 'Not relevant to dermatology care',
+            isRelevant: condition.isActive,
+          }))}
+        />
+      )}
 
       {/* Medications section */}
-      <MedicalInfoSection
-        title="Medications"
-        items={[
-          {
-            title: 'Paracetamol (Doliprane)',
-            description: 'Relevant for skin treatment decisions',
-            isRelevant: true,
-          },
-        ]}
-      />
+      {user.medications.length > 0 && (
+        <MedicalInfoSection
+          title="Medications"
+          items={user.medications.map(medication => ({
+            title: medication.medicationName,
+            description: medication.isActive ? 'Relevant for skin treatment decisions' : 'Not currently active',
+            isRelevant: medication.isActive,
+          }))}
+        />
+      )}
       </div>
     </div>
   )
