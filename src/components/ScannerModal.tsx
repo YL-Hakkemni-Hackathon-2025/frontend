@@ -108,7 +108,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                   onScanComplete(base64Image)
                   onClose()
                   setScanSuccess(false)
-                }, 1500)
+                }, 2500)
               } catch (e) {
                 console.error('Failed to process image:', e)
                 scannerRef.current = currentScanner
@@ -133,7 +133,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                     onScanComplete(base64Image)
                     onClose()
                     setScanSuccess(false)
-                  }, 1500)
+                  }, 2500)
                 } catch (e) {
                   console.error('Failed to process image:', e)
                   scannerRef.current = currentScanner
@@ -226,18 +226,16 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
                 className="absolute inset-0 flex flex-col items-center justify-center bg-[#1C1C1C] z-10"
               >
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  transition={{ type: "spring", stiffness: 150, damping: 12, delay: 0.2 }}
                   className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mb-4"
                 >
                   <motion.svg
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
                     className="w-10 h-10 text-white"
                     fill="none"
                     viewBox="0 0 24 24"
@@ -247,7 +245,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                     <motion.path
                       initial={{ pathLength: 0 }}
                       animate={{ pathLength: 1 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
+                      transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       d="M5 13l4 4L19 7"
@@ -257,7 +255,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
+                  transition={{ delay: 0.8, duration: 0.4 }}
                   className="text-white font-bold text-lg"
                 >
                   ID Scanned Successfully
