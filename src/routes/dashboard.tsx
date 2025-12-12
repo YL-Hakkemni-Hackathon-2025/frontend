@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import menuIcon from '@/assets/dashboard/menu.svg'
 import addIcon from '@/assets/dashboard/add.svg'
@@ -11,6 +11,7 @@ import lifestyleIcon from '@/assets/dashboard/lifestyle.svg'
 import documentIcon from '@/assets/dashboard/document.svg'
 import documentsIcon from '@/assets/dashboard/documents.svg'
 import searchIcon from '@/assets/search (1).svg'
+import closeIcon from '@/assets/close.svg'
 import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
 import MedicationIcon from '@/assets/MedicationIcon.svg'
 import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
@@ -18,6 +19,14 @@ import AllergyIcon from '@/assets/AllergyIcon.svg'
 import { UserFullSummaryDto } from '@/dtos/user.dto'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
 import { DocumentSection } from '@/components/DocumentSection'
+import { BottomSheet } from '@/components/BottomSheet'
+import { FormInput } from '@/components/FormInput'
+import { FormTextArea } from '@/components/FormTextArea'
+import { FormSelect } from '@/components/FormSelect'
+import { AllergyType, AllergySeverity } from '@/dtos/allergy.dto'
+import { LifestyleCategory } from '@/utils/global.types'
+
+type FormType = 'medical-condition' | 'medication' | 'allergy' | 'lifestyle' | 'document' | null
 export const Route = createFileRoute('/dashboard')({
   beforeLoad: ({ context }) => {
     if (!context.isAuthenticated) {
@@ -30,7 +39,71 @@ export const Route = createFileRoute('/dashboard')({
 function DashboardPage() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isFabMenuOpen, setIsFabMenuOpen] = useState(false)
+  const [activeForm, setActiveForm] = useState<FormType>(null)
+
+  // Medical Condition form
+  const [medicalConditionForm, setMedicalConditionForm] = useState({ name: '', diagnosedDate: '', notes: '' })
+  const isMedicalConditionValid = medicalConditionForm.name.trim() !== ''
+
+  // Medication form
+  const [medicationForm, setMedicationForm] = useState({ name: '', dosage: '', frequency: '', startDate: '', notes: '' })
+  const isMedicationValid = medicationForm.name.trim() !== ''
+
+  // Allergy form
+  const [allergyForm, setAllergyForm] = useState({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
+  const isAllergyValid = allergyForm.allergen.trim() !== '' && allergyForm.type.trim() !== ''
+
+  // Lifestyle form
+  const [lifestyleForm, setLifestyleForm] = useState({ category: '', description: '', frequency: '', startDate: '', notes: '' })
+  const isLifestyleValid = lifestyleForm.category.trim() !== '' && lifestyleForm.description.trim() !== ''
+
+  // Document form
+  const [documentForm, setDocumentForm] = useState({ documentName: '', documentDate: '', notes: '', file: null as File | null })
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const isDocumentValid = documentForm.documentName.trim() !== '' && documentForm.file !== null
+
   const navigate = useNavigate()
+
+  const handleCloseBottomSheet = () => {
+    setActiveForm(null)
+    setMedicalConditionForm({ name: '', diagnosedDate: '', notes: '' })
+    setMedicationForm({ name: '', dosage: '', frequency: '', startDate: '', notes: '' })
+    setAllergyForm({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
+    setLifestyleForm({ category: '', description: '', frequency: '', startDate: '', notes: '' })
+    setDocumentForm({ documentName: '', documentDate: '', notes: '', file: null })
+    setPdfPreviewUrl(null)
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file && file.type === 'application/pdf') {
+      setDocumentForm({ ...documentForm, file })
+
+      // Create preview URL for PDF
+      const fileUrl = URL.createObjectURL(file)
+      setPdfPreviewUrl(fileUrl)
+    }
+  }
+
+  const handleRemoveFile = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (pdfPreviewUrl) {
+      URL.revokeObjectURL(pdfPreviewUrl)
+    }
+    setDocumentForm({ ...documentForm, file: null })
+    setPdfPreviewUrl(null)
+    // Reset file input to allow selecting the same file again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const handleSave = () => {
+    // TODO: Handle save logic based on activeForm type
+    console.log('Saving form:', activeForm)
+    handleCloseBottomSheet()
+  }
 
   // TODO: Replace with actual user data from API/state
   const user: UserFullSummaryDto = {
@@ -130,11 +203,37 @@ function DashboardPage() {
   }
 
   const fabMenuItems = [
-    { label: 'Medical condition', icon: heartIcon, action: () => console.log('Medical condition') },
-    { label: 'Medication', icon: medicationIcon, action: () => console.log('Medication') },
-    { label: 'Allergy', icon: allergyIcon, action: () => console.log('Allergy') },
-    { label: 'Lifestyle', icon: lifestyleIcon, action: () => console.log('Lifestyle') },
-    { label: 'Document', icon: documentIcon, action: () => console.log('Document') },
+    { label: 'Medical condition', icon: heartIcon, action: () => setActiveForm('medical-condition') },
+    { label: 'Medication', icon: medicationIcon, action: () => setActiveForm('medication') },
+    { label: 'Allergy', icon: allergyIcon, action: () => setActiveForm('allergy') },
+    { label: 'Lifestyle', icon: lifestyleIcon, action: () => setActiveForm('lifestyle') },
+    { label: 'Document', icon: documentIcon, action: () => setActiveForm('document') },
+  ]
+
+  const allergyTypeOptions = [
+    { value: AllergyType.DRUG, label: 'Drug' },
+    { value: AllergyType.FOOD, label: 'Food' },
+    { value: AllergyType.ENVIRONMENTAL, label: 'Environmental' },
+    { value: AllergyType.INSECT, label: 'Insect' },
+    { value: AllergyType.LATEX, label: 'Latex' },
+    { value: AllergyType.OTHER, label: 'Other' },
+  ]
+
+  const allergySeverityOptions = [
+    { value: AllergySeverity.MILD, label: 'Mild' },
+    { value: AllergySeverity.MODERATE, label: 'Moderate' },
+    { value: AllergySeverity.SEVERE, label: 'Severe' },
+    { value: AllergySeverity.LIFE_THREATENING, label: 'Life-threatening' },
+  ]
+
+  const lifestyleCategoryOptions = [
+    { value: LifestyleCategory.SMOKING, label: 'Smoking' },
+    { value: LifestyleCategory.ALCOHOL, label: 'Alcohol' },
+    { value: LifestyleCategory.EXERCISE, label: 'Exercise' },
+    { value: LifestyleCategory.DIET, label: 'Diet' },
+    { value: LifestyleCategory.SLEEP, label: 'Sleep' },
+    { value: LifestyleCategory.STRESS, label: 'Stress' },
+    { value: LifestyleCategory.OTHER, label: 'Other' },
   ]
 
   return (
@@ -404,6 +503,277 @@ function DashboardPage() {
           className={`w-6 h-6 transition-transform duration-200 ${isFabMenuOpen ? 'rotate-45' : ''}`}
         />
       </button>
+
+      {/* Medical Condition Bottom Sheet */}
+      <BottomSheet
+        isOpen={activeForm === 'medical-condition'}
+        onClose={handleCloseBottomSheet}
+        onSave={handleSave}
+        isValid={isMedicalConditionValid}
+      >
+        <div className="flex flex-col gap-6">
+          <FormInput
+            label="Condition name"
+            placeholder="e.g., Eczema"
+            value={medicalConditionForm.name}
+            onChange={(value) => setMedicalConditionForm({ ...medicalConditionForm, name: value })}
+          />
+          <FormInput
+            label="Diagnosed date"
+            optional
+            type="date"
+            value={medicalConditionForm.diagnosedDate}
+            onChange={(value) => setMedicalConditionForm({ ...medicalConditionForm, diagnosedDate: value })}
+          />
+          <FormTextArea
+            label="Notes"
+            optional
+            placeholder="Additional context for this condition"
+            value={medicalConditionForm.notes}
+            onChange={(value) => setMedicalConditionForm({ ...medicalConditionForm, notes: value })}
+          />
+        </div>
+      </BottomSheet>
+
+      {/* Medication Bottom Sheet */}
+      <BottomSheet
+        isOpen={activeForm === 'medication'}
+        onClose={handleCloseBottomSheet}
+        onSave={handleSave}
+        isValid={isMedicationValid}
+      >
+        <div className="flex flex-col gap-6">
+          <FormInput
+            label="Medication name"
+            placeholder="e.g., Paracetamol"
+            value={medicationForm.name}
+            onChange={(value) => setMedicationForm({ ...medicationForm, name: value })}
+          />
+          <div className="grid grid-cols-2 gap-4">
+            <FormInput
+              label="Dosage"
+              placeholder="e.g., 500mg"
+              value={medicationForm.dosage}
+              onChange={(value) => setMedicationForm({ ...medicationForm, dosage: value })}
+            />
+            <FormInput
+              label="Frequency"
+              placeholder="e.g., Daily"
+              value={medicationForm.frequency}
+              onChange={(value) => setMedicationForm({ ...medicationForm, frequency: value })}
+            />
+          </div>
+          <FormInput
+            label="Start date"
+            type="date"
+            value={medicationForm.startDate}
+            onChange={(value) => setMedicationForm({ ...medicationForm, startDate: value })}
+          />
+          <FormTextArea
+            label="Notes"
+            optional
+            placeholder="Additional context for this medication"
+            value={medicationForm.notes}
+            onChange={(value) => setMedicationForm({ ...medicationForm, notes: value })}
+          />
+        </div>
+      </BottomSheet>
+
+      {/* Allergy Bottom Sheet */}
+      <BottomSheet
+        isOpen={activeForm === 'allergy'}
+        onClose={handleCloseBottomSheet}
+        onSave={handleSave}
+        isValid={isAllergyValid}
+      >
+        <div className="flex flex-col gap-6">
+          <FormInput
+            label="Allergen"
+            placeholder="e.g., Peanuts"
+            value={allergyForm.allergen}
+            onChange={(value) => setAllergyForm({ ...allergyForm, allergen: value })}
+          />
+          <FormSelect
+            label="Type"
+            placeholder="Select type"
+            value={allergyForm.type}
+            onChange={(value) => setAllergyForm({ ...allergyForm, type: value })}
+            options={allergyTypeOptions}
+          />
+          <FormSelect
+            label="Severity"
+            optional
+            placeholder="Select severity"
+            value={allergyForm.severity}
+            onChange={(value) => setAllergyForm({ ...allergyForm, severity: value })}
+            options={allergySeverityOptions}
+          />
+          <FormInput
+            label="Reaction"
+            optional
+            placeholder="e.g., Hives, difficulty breathing"
+            value={allergyForm.reaction}
+            onChange={(value) => setAllergyForm({ ...allergyForm, reaction: value })}
+          />
+          <FormInput
+            label="Diagnosed date"
+            optional
+            type="date"
+            value={allergyForm.diagnosedDate}
+            onChange={(value) => setAllergyForm({ ...allergyForm, diagnosedDate: value })}
+          />
+          <FormTextArea
+            label="Notes"
+            optional
+            placeholder="Additional context for this allergy"
+            value={allergyForm.notes}
+            onChange={(value) => setAllergyForm({ ...allergyForm, notes: value })}
+          />
+        </div>
+      </BottomSheet>
+
+      {/* Lifestyle Bottom Sheet */}
+      <BottomSheet
+        isOpen={activeForm === 'lifestyle'}
+        onClose={handleCloseBottomSheet}
+        onSave={handleSave}
+        isValid={isLifestyleValid}
+      >
+        <div className="flex flex-col gap-6">
+          <FormSelect
+            label="Category"
+            placeholder="Select category"
+            value={lifestyleForm.category}
+            onChange={(value) => setLifestyleForm({ ...lifestyleForm, category: value })}
+            options={lifestyleCategoryOptions}
+          />
+          <FormInput
+            label="Description"
+            placeholder="e.g., Non-smoker"
+            value={lifestyleForm.description}
+            onChange={(value) => setLifestyleForm({ ...lifestyleForm, description: value })}
+          />
+          <FormInput
+            label="Frequency"
+            optional
+            placeholder="e.g., Daily, Weekly"
+            value={lifestyleForm.frequency}
+            onChange={(value) => setLifestyleForm({ ...lifestyleForm, frequency: value })}
+          />
+          <FormInput
+            label="Start date"
+            optional
+            type="date"
+            value={lifestyleForm.startDate}
+            onChange={(value) => setLifestyleForm({ ...lifestyleForm, startDate: value })}
+          />
+          <FormTextArea
+            label="Notes"
+            optional
+            placeholder="Additional context for this lifestyle choice"
+            value={lifestyleForm.notes}
+            onChange={(value) => setLifestyleForm({ ...lifestyleForm, notes: value })}
+          />
+        </div>
+      </BottomSheet>
+
+      {/* Document Bottom Sheet */}
+      <BottomSheet
+        isOpen={activeForm === 'document'}
+        onClose={handleCloseBottomSheet}
+        onSave={handleSave}
+        isValid={isDocumentValid}
+      >
+        <div className="flex flex-col gap-6">
+          {/* File picker box */}
+          <div className="relative">
+            <input
+              ref={fileInputRef}
+              type="file"
+              id="pdf-upload"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <label
+              htmlFor="pdf-upload"
+              className="flex items-center justify-center cursor-pointer"
+              style={{
+                height: '175px',
+                width: '100%',
+                backgroundColor: '#F0F0F0',
+                borderRadius: '16px',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {!documentForm.file ? (
+                <p
+                  style={{
+                    fontFamily: 'Inter',
+                    fontSize: '16px',
+                    fontWeight: 500,
+                    color: '#5C5C5C',
+                  }}
+                >
+                  Tap to pick
+                </p>
+              ) : pdfPreviewUrl ? (
+                <iframe
+                  src={`${pdfPreviewUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className="pointer-events-none"
+                  style={{
+                    border: 'none',
+                    width: '100%',
+                    height: '250px',
+                    transform: 'scale(0.7)',
+                    transformOrigin: 'center center',
+                  }}
+                />
+              ) : null}
+            </label>
+            {documentForm.file && (
+              <button
+                onClick={handleRemoveFile}
+                className="absolute top-3 right-3 flex items-center justify-center z-10"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: '#1C1C1C',
+                  borderRadius: '50%',
+                }}
+              >
+                <img src={closeIcon} alt="Remove" className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Document name and Date in row */}
+          <div className="grid grid-cols-2 gap-4">
+            <FormInput
+              label="Document name"
+              placeholder="e.g., CBC Report"
+              value={documentForm.documentName}
+              onChange={(value) => setDocumentForm({ ...documentForm, documentName: value })}
+            />
+            <FormInput
+              label="Date"
+              type="date"
+              value={documentForm.documentDate}
+              onChange={(value) => setDocumentForm({ ...documentForm, documentDate: value })}
+            />
+          </div>
+
+          {/* Notes */}
+          <FormTextArea
+            label="Notes"
+            optional
+            placeholder="Additional context for this document"
+            value={documentForm.notes}
+            onChange={(value) => setDocumentForm({ ...documentForm, notes: value })}
+          />
+        </div>
+      </BottomSheet>
     </div>
   )
 }

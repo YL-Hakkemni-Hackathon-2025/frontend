@@ -1,0 +1,48 @@
+interface FormSelectProps {
+  label: string
+  optional?: boolean
+  placeholder?: string
+  value: string
+  onChange: (value: string) => void
+  options: { value: string; label: string }[]
+}
+
+export function FormSelect({ label, optional = false, placeholder, value, onChange, options }: FormSelectProps) {
+  return (
+    <div>
+      <label
+        className="block mb-2"
+        style={{
+          fontFamily: 'Inter',
+          fontSize: '16px',
+          lineHeight: '121%',
+          letterSpacing: '0%',
+          verticalAlign: 'middle',
+          color: '#000000',
+        }}
+      >
+        <span style={{ fontWeight: 900 }}>{label}</span>
+        {optional && <span style={{ fontWeight: 400 }}> (Optional)</span>}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-4 rounded-full outline-none border-2 border-white focus:border-black"
+        style={{
+          height: '44px',
+          fontFamily: 'Inter',
+          fontSize: '14px',
+          fontWeight: 400,
+          boxShadow: '0px 0px 30px 0px #385DA41A',
+        }}
+      >
+        <option value="">{placeholder || 'Select...'}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  )
+}
