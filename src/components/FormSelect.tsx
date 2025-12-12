@@ -5,9 +5,10 @@ interface FormSelectProps {
   value: string
   onChange: (value: string) => void
   options: { value: string; label: string }[]
+  disabled?: boolean
 }
 
-export function FormSelect({ label, optional = false, placeholder, value, onChange, options }: FormSelectProps) {
+export function FormSelect({ label, optional = false, placeholder, value, onChange, options, disabled = false }: FormSelectProps) {
   return (
     <div>
       <label
@@ -18,7 +19,7 @@ export function FormSelect({ label, optional = false, placeholder, value, onChan
           lineHeight: '121%',
           letterSpacing: '0%',
           verticalAlign: 'middle',
-          color: '#000000',
+          color: disabled ? '#9CA3AF' : '#000000',
         }}
       >
         <span style={{ fontWeight: 900 }}>{label}</span>
@@ -27,7 +28,8 @@ export function FormSelect({ label, optional = false, placeholder, value, onChan
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 rounded-full outline-none border-2 border-white focus:border-black"
+        disabled={disabled}
+        className={`w-full px-4 rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
         style={{
           height: '44px',
           fontFamily: 'Inter',

@@ -16,4 +16,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://hakkemni-api.internalizable.dev',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 })

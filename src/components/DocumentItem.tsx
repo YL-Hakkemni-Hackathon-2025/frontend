@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import DocumentIcon from '@/assets/DocumentIcon.svg'
 import DownloadIcon from '@/assets/download.svg'
 
@@ -6,9 +7,19 @@ interface DocumentItemProps {
   date: string
   aiSummary: string
   isLast?: boolean
+  fileUrl?: string
 }
 
-export function DocumentItem({ title, date, aiSummary, isLast }: DocumentItemProps) {
+export function DocumentItem({ title, date, aiSummary, isLast, fileUrl }: DocumentItemProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const handleDownload = () => {
+    if (!fileUrl) return
+
+    // Open the file URL in a new tab (will trigger download for PDFs)
+    window.open(fileUrl, '_blank')
+  }
+
   return (
     <div
       className="flex flex-col w-full"
@@ -56,12 +67,16 @@ export function DocumentItem({ title, date, aiSummary, isLast }: DocumentItemPro
 
         {/* Download button */}
         <button
+          onClick={handleDownload}
+          disabled={!fileUrl}
           className="flex items-center justify-center"
           style={{
             width: '56px',
             height: '56px',
             borderRadius: '50%',
             background: '#F7F7F7',
+            cursor: fileUrl ? 'pointer' : 'not-allowed',
+            opacity: fileUrl ? 1 : 0.5,
           }}
         >
           <img src={DownloadIcon} alt="Download" className="w-6 h-6" />
@@ -84,19 +99,72 @@ export function DocumentItem({ title, date, aiSummary, isLast }: DocumentItemPro
         >
           AI summary
         </h5>
-        <p
-          style={{
-            fontFamily: 'Inter',
-            fontWeight: 400,
-            fontSize: '14px',
-            lineHeight: '121%',
-            letterSpacing: '0%',
-            verticalAlign: 'middle',
-            color: '#5C5C5C',
-          }}
-        >
-          {aiSummary}
-        </p>
+        {isExpanded ? (
+          <p
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '0%',
+              color: '#5C5C5C',
+            }}
+          >
+            {aiSummary}
+            {aiSummary && aiSummary.length > 100 && (
+              <button
+                onClick={() => setIsExpanded(false)}
+                style={{
+                  fontFamily: 'Inter',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  color: '#000000',
+                  marginLeft: '4px',
+                  background: 'none',
+                  border: 'none',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                View less
+              </button>
+            )}
+          </p>
+        ) : (
+          <p
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '0%',
+              color: '#5C5C5C',
+            }}
+          >
+            {aiSummary && aiSummary.length > 100 ? (
+              <>
+                {aiSummary.substring(0, 100)}...{' '}
+                <button
+                  onClick={() => setIsExpanded(true)}
+                  style={{
+                    fontFamily: 'Inter',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    color: '#000000',
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
+                >
+                  View more
+                </button>
+              </>
+            ) : (
+              aiSummary
+            )}
+          </p>
+        )}
       </div>
     </div>
   )

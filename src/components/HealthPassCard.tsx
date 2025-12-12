@@ -7,10 +7,54 @@ interface HealthPassCardProps {
   specialty?: string
   validUntil?: string
   showButton?: boolean
+  qrCode?: string
+  accessCode?: string
 }
 
-export function HealthPassCard({ name = "Melissa Keyrouz", dob = "30/05/1990", specialty, validUntil, showButton = false }: HealthPassCardProps) {
+export function HealthPassCard({
+  name = "Melissa Keyrouz",
+  dob = "30/05/1990",
+  specialty,
+  validUntil,
+  showButton = false,
+  qrCode,
+  accessCode,
+}: HealthPassCardProps) {
   const cardHeight = showButton ? "h-[239px]" : "h-44"
+
+  const handleShareWhatsApp = async () => {
+    if (!accessCode) return
+
+    // Create the share URL - use production domain or current origin
+    const baseUrl = import.meta.env.PROD
+      ? 'https://hakkemni.internalizable.dev'
+      : window.location.origin
+    const shareUrl = `${baseUrl}/health-summary?code=${accessCode}`
+    const shareText = `View my HealthPass: ${shareUrl}`
+
+    // Try to use Web Share API if available (mobile)
+    if (navigator.share && qrCode) {
+      try {
+        // Convert base64 QR code to blob for sharing
+        const response = await fetch(qrCode)
+        const blob = await response.blob()
+        const file = new File([blob], 'healthpass-qr.png', { type: 'image/png' })
+
+        await navigator.share({
+          title: 'My HealthPass',
+          text: shareText,
+          files: [file],
+        })
+        return
+      } catch (err) {
+        console.log('Web Share API failed, falling back to WhatsApp URL:', err)
+      }
+    }
+
+    // Fallback: Open WhatsApp with the share URL
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`
+    window.open(whatsappUrl, '_blank')
+  }
 
   return (
     <div className="relative w-full">
@@ -43,7 +87,7 @@ export function HealthPassCard({ name = "Melissa Keyrouz", dob = "30/05/1990", s
           <p className="font-bold text-white">{dob}</p>
         </div>
 
-        <img src={qrTemplate} alt="qrcode" className="rounded-xl" />
+        <img src={qrCode || qrTemplate} alt="qrcode" className="rounded-xl w-[100px] h-[100px] object-contain bg-white" />
         </div>
 
         {/* Button section - conditionally rendered */}
@@ -56,6 +100,7 @@ export function HealthPassCard({ name = "Melissa Keyrouz", dob = "30/05/1990", s
           >
             <p className="font-medium text-white text-sm">Scan at clinic or</p>
             <button
+              onClick={handleShareWhatsApp}
               className="px-4 h-[44px] rounded-full flex flex-row items-center justify-center gap-2"
               style={{
                 background: '#003AAB',

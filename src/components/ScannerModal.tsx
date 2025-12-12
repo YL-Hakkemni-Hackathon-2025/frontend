@@ -63,13 +63,14 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
         const scanner = await sdk.createDocumentScanner({
           containerId: 'scanner-container',
           autoCaptureEnabled: true,
-          autoCaptureSensitivity: 1.0, // Maximum speed - immediate capture
-          autoCaptureDelay: 0, // No delay
+          autoCaptureSensitivity: 0.66, // Lower sensitivity - waits for clearer image
+          autoCaptureDelay: 1000, // Wait 1 second for camera to focus before capturing
           scannerConfiguration: {
               parameters: {
                   ignoreOrientationMismatch: true,
               }
           },
+          preferredCamera: 'camera2 0, facing back', // Prefer back camera for better quality
           text: {
             hint: {
               OK: 'Ready to capture',
@@ -98,7 +99,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
               const currentScanner = scannerRef.current
               scannerRef.current = null
               try {
-                const jpegData = await croppedImage.toJpeg(90)
+                const jpegData = await croppedImage.toJpeg(100)
                 const base64Image = uint8ArrayToDataUrl(jpegData)
                 currentScanner.dispose()
 
@@ -123,7 +124,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                 const currentScanner = scannerRef.current
                 scannerRef.current = null
                 try {
-                  const jpegData = await captureResult.result.croppedImage.toJpeg(90)
+                  const jpegData = await captureResult.result.croppedImage.toJpeg(100)
                   const base64Image = uint8ArrayToDataUrl(jpegData)
                   currentScanner.dispose()
 

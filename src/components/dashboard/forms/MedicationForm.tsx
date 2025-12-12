@@ -1,15 +1,28 @@
 import { BottomSheet } from '@/components/BottomSheet'
 import { FormInput } from '@/components/FormInput'
 import { FormTextArea } from '@/components/FormTextArea'
+import { FormSelect } from '@/components/FormSelect'
+import { MedicationFrequency } from '@/utils/global.types'
 
 interface MedicationFormProps {
   isOpen: boolean
-  form: { name: string; dosage: string; frequency: string; startDate: string; notes: string }
+  form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }
   isValid: boolean
-  onFormChange: (form: { name: string; dosage: string; frequency: string; startDate: string; notes: string }) => void
+  onFormChange: (form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
 }
+
+const frequencyOptions = [
+  { value: MedicationFrequency.ONCE_DAILY, label: 'Once daily' },
+  { value: MedicationFrequency.TWICE_DAILY, label: 'Twice daily' },
+  { value: MedicationFrequency.THREE_TIMES_DAILY, label: 'Three times daily' },
+  { value: MedicationFrequency.FOUR_TIMES_DAILY, label: 'Four times daily' },
+  { value: MedicationFrequency.AS_NEEDED, label: 'As needed' },
+  { value: MedicationFrequency.WEEKLY, label: 'Weekly' },
+  { value: MedicationFrequency.MONTHLY, label: 'Monthly' },
+  { value: MedicationFrequency.OTHER, label: 'Other' },
+]
 
 export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: MedicationFormProps) {
   return (
@@ -18,29 +31,39 @@ export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, o
         <FormInput
           label="Medication name"
           placeholder="e.g., Paracetamol"
-          value={form.name}
-          onChange={(value) => onFormChange({ ...form, name: value })}
+          value={form.medicationName}
+          onChange={(value) => onFormChange({ ...form, medicationName: value })}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Dosage"
             placeholder="e.g., 500mg"
-            value={form.dosage}
-            onChange={(value) => onFormChange({ ...form, dosage: value })}
+            value={form.dosageAmount}
+            onChange={(value) => onFormChange({ ...form, dosageAmount: value })}
           />
-          <FormInput
+          <FormSelect
             label="Frequency"
-            placeholder="e.g., Daily"
+            placeholder="Select frequency"
             value={form.frequency}
             onChange={(value) => onFormChange({ ...form, frequency: value })}
+            options={frequencyOptions}
           />
         </div>
-        <FormInput
-          label="Start date"
-          type="date"
-          value={form.startDate}
-          onChange={(value) => onFormChange({ ...form, startDate: value })}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormInput
+            label="Start date"
+            type="date"
+            value={form.startDate}
+            onChange={(value) => onFormChange({ ...form, startDate: value })}
+          />
+          <FormInput
+            label="End date"
+            optional
+            type="date"
+            value={form.endDate}
+            onChange={(value) => onFormChange({ ...form, endDate: value })}
+          />
+        </div>
         <FormTextArea
           label="Notes"
           optional

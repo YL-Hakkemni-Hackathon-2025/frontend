@@ -15,6 +15,7 @@ import { Route as HealthpassResultsRouteImport } from './routes/healthpass-resul
 import { Route as HealthSummaryRouteImport } from './routes/health-summary'
 import { Route as GenerateHealthpassRouteImport } from './routes/generate-healthpass'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AppointmentSelectionRouteImport } from './routes/appointment-selection'
 import { Route as IndexRouteImport } from './routes/index'
 
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -47,6 +48,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppointmentSelectionRoute = AppointmentSelectionRouteImport.update({
+  id: '/appointment-selection',
+  path: '/appointment-selection',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -55,6 +61,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/appointment-selection': typeof AppointmentSelectionRoute
   '/dashboard': typeof DashboardRoute
   '/generate-healthpass': typeof GenerateHealthpassRoute
   '/health-summary': typeof HealthSummaryRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/appointment-selection': typeof AppointmentSelectionRoute
   '/dashboard': typeof DashboardRoute
   '/generate-healthpass': typeof GenerateHealthpassRoute
   '/health-summary': typeof HealthSummaryRoute
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/appointment-selection': typeof AppointmentSelectionRoute
   '/dashboard': typeof DashboardRoute
   '/generate-healthpass': typeof GenerateHealthpassRoute
   '/health-summary': typeof HealthSummaryRoute
@@ -85,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/appointment-selection'
     | '/dashboard'
     | '/generate-healthpass'
     | '/health-summary'
@@ -94,6 +104,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/appointment-selection'
     | '/dashboard'
     | '/generate-healthpass'
     | '/health-summary'
@@ -103,6 +114,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/appointment-selection'
     | '/dashboard'
     | '/generate-healthpass'
     | '/health-summary'
@@ -113,6 +125,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppointmentSelectionRoute: typeof AppointmentSelectionRoute
   DashboardRoute: typeof DashboardRoute
   GenerateHealthpassRoute: typeof GenerateHealthpassRoute
   HealthSummaryRoute: typeof HealthSummaryRoute
@@ -165,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appointment-selection': {
+      id: '/appointment-selection'
+      path: '/appointment-selection'
+      fullPath: '/appointment-selection'
+      preLoaderRoute: typeof AppointmentSelectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -177,6 +197,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppointmentSelectionRoute: AppointmentSelectionRoute,
   DashboardRoute: DashboardRoute,
   GenerateHealthpassRoute: GenerateHealthpassRoute,
   HealthSummaryRoute: HealthSummaryRoute,

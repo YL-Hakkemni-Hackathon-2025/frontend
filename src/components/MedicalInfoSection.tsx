@@ -1,6 +1,7 @@
 import { MedicalConditionItem } from './MedicalConditionItem'
 
 interface MedicalInfoItem {
+  id?: string
   title: string
   description: string
   isRelevant: boolean
@@ -11,9 +12,10 @@ interface MedicalInfoSectionProps {
   items: MedicalInfoItem[]
   showToggle?: boolean
   icon?: string
+  onToggle?: (itemId: string, isEnabled: boolean) => Promise<void>
 }
 
-export function MedicalInfoSection({ title, items, showToggle = true, icon }: MedicalInfoSectionProps) {
+export function MedicalInfoSection({ title, items, showToggle = true, icon, onToggle }: MedicalInfoSectionProps) {
   return (
     <div
       className="w-full bg-white rounded-xl flex flex-col px-6"
@@ -41,13 +43,15 @@ export function MedicalInfoSection({ title, items, showToggle = true, icon }: Me
 
       {items.map((item, index) => (
         <MedicalConditionItem
-          key={index}
+          key={item.id || index}
           title={item.title}
           description={item.description}
           isRelevant={item.isRelevant}
           isLast={index === items.length - 1}
           showToggle={showToggle}
           icon={icon}
+          itemId={item.id}
+          onToggle={onToggle}
         />
       ))}
     </div>

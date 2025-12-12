@@ -7,10 +7,41 @@ interface MedicalConditionItemProps {
   isLast?: boolean
   showToggle?: boolean
   icon?: string
+  itemId?: string
+  onToggle?: (itemId: string, isEnabled: boolean) => Promise<void>
 }
 
-export function MedicalConditionItem({ title, description, isRelevant = true, isLast = false, showToggle = true, icon }: MedicalConditionItemProps) {
+export function MedicalConditionItem({
+  title,
+  description,
+  isRelevant = true,
+  isLast = false,
+  showToggle = true,
+  icon,
+  itemId,
+  onToggle,
+}: MedicalConditionItemProps) {
   const [isEnabled, setIsEnabled] = useState(isRelevant)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleToggle = async () => {
+    if (!itemId || !onToggle) {
+      // If no callback, just toggle locally
+      setIsEnabled(!isEnabled)
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      await onToggle(itemId, !isEnabled)
+      setIsEnabled(!isEnabled)
+    } catch (error) {
+      console.error('Failed to toggle item:', error)
+      // Don't change the state if the API call failed
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div
@@ -19,6 +50,7 @@ export function MedicalConditionItem({ title, description, isRelevant = true, is
         paddingTop: '16px',
         paddingBottom: isLast ? '0' : '16px',
         borderBottom: isLast ? 'none' : '1px solid #F5F5F5',
+        opacity: isLoading ? 0.5 : 1,
       }}
     >
       {/* Icon for doctor view */}
@@ -57,10 +89,12 @@ export function MedicalConditionItem({ title, description, isRelevant = true, is
       {/* Right section - Toggle switch */}
       {showToggle && (
         <button
-          onClick={() => setIsEnabled(!isEnabled)}
+          onClick={handleToggle}
+          disabled={isLoading}
           className="relative w-12 h-7 rounded-full transition-colors duration-300"
           style={{
             background: isEnabled ? '#00A210' : '#EFEFEF',
+            cursor: isLoading ? 'wait' : 'pointer',
           }}
         >
           <div
