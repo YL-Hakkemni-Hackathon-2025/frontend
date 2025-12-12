@@ -12,6 +12,7 @@ import { userAtom } from '@/atoms/user.atom'
 import { userDetailsAtom } from '@/atoms/userDetails.atom'
 import { AuthTokenResponseDto } from '@/dtos/auth.dto'
 import { UserResponseDto } from '@/dtos/user.dto'
+import { apiUrl } from '@/utils/api'
 
 export const Route = createFileRoute('/onboarding')({
   beforeLoad: ({ context }) => {
@@ -54,8 +55,8 @@ function OnboardingPage() {
       const formData = new FormData()
       formData.append('image', blob, 'id-card.jpg')
 
-      // Call the verify-id API (uses Vite proxy in development)
-      const response = await fetch('/api/v1/auth/verify-id', {
+      // Call the verify-id API
+      const response = await fetch(apiUrl('/api/v1/auth/verify-id'), {
         method: 'POST',
         body: formData,
       })
@@ -80,7 +81,7 @@ function OnboardingPage() {
       setUser(authData)
 
       // Fetch user details
-      const userDetailsResponse = await fetch('/api/v1/users/me', {
+      const userDetailsResponse = await fetch(apiUrl('/api/v1/users/me'), {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authData.accessToken}`,
