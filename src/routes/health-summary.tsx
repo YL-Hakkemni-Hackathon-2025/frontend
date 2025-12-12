@@ -6,8 +6,8 @@ import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
 import MedicationIcon from '@/assets/MedicationIcon.svg'
 import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
 import AllergyIcon from '@/assets/AllergyIcon.svg'
-import DocumentIcon from '@/assets/DocumentIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
+import { DocumentSection } from '@/components/DocumentSection'
 import { HealthPassPreviewDto } from '@/dtos/health-pass.dto'
 import { AppointmentSpecialty } from '@/utils/global.types'
 import { apiUrl } from '@/utils/api'
@@ -248,14 +248,13 @@ function HealthSummaryPage() {
 
         {/* Documents section */}
         {healthPass.documents && healthPass.documents.length > 0 && (
-          <MedicalInfoSection
+          <DocumentSection
             title="Documents"
-            showToggle={false}
-            icon={DocumentIcon}
             items={healthPass.documents.map(doc => ({
               title: doc.documentName,
-              description: doc.documentDate ? `Date: ${formatDate(doc.documentDate)}` : 'No date',
-              isRelevant: true,
+              date: doc.documentDate ? formatDate(doc.documentDate) : 'No date',
+              aiSummary: doc.notes || '',
+              fileUrl: doc.fileUrl,
             }))}
           />
         )}
