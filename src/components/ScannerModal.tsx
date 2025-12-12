@@ -22,6 +22,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
   const scannerContainerRef = useRef<HTMLDivElement>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [scanSuccess, setScanSuccess] = useState(false)
   const sdkRef = useRef<ScanbotSDK | null>(null)
   const scannerRef = useRef<Awaited<ReturnType<ScanbotSDK['createDocumentScanner']>> | null>(null)
   const LICENSE_KEY =
@@ -100,8 +101,14 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                 const jpegData = await croppedImage.toJpeg(90)
                 const base64Image = uint8ArrayToDataUrl(jpegData)
                 currentScanner.dispose()
-                onScanComplete(base64Image)
-                onClose()
+
+                // Show success state before closing
+                setScanSuccess(true)
+                setTimeout(() => {
+                  onScanComplete(base64Image)
+                  onClose()
+                  setScanSuccess(false)
+                }, 1500)
               } catch (e) {
                 console.error('Failed to process image:', e)
                 scannerRef.current = currentScanner
@@ -119,8 +126,14 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
                   const jpegData = await captureResult.result.croppedImage.toJpeg(90)
                   const base64Image = uint8ArrayToDataUrl(jpegData)
                   currentScanner.dispose()
-                  onScanComplete(base64Image)
-                  onClose()
+
+                  // Show success state before closing
+                  setScanSuccess(true)
+                  setTimeout(() => {
+                    onScanComplete(base64Image)
+                    onClose()
+                    setScanSuccess(false)
+                  }, 1500)
                 } catch (e) {
                   console.error('Failed to process image:', e)
                   scannerRef.current = currentScanner
@@ -208,6 +221,48 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
               <div className="absolute inset-0 flex items-center justify-center bg-[#1C1C1C] p-4">
                 <p className="text-white text-center">{error}</p>
               </div>
+            )}
+            {scanSuccess && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="absolute inset-0 flex flex-col items-center justify-center bg-[#1C1C1C] z-10"
+              >
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mb-4"
+                >
+                  <motion.svg
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="w-10 h-10 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={3}
+                  >
+                    <motion.path
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: 1 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </motion.svg>
+                </motion.div>
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="text-white font-bold text-lg"
+                >
+                  ID Scanned Successfully
+                </motion.p>
+              </motion.div>
             )}
             <div
               id="scanner-container"
