@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/((?!assets|logo.svg|manifest.json|vite.svg).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+

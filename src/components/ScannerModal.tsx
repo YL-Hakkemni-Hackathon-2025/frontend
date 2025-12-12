@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'motion/react'
 import ScanbotSDK from 'scanbot-web-sdk'
+import closeIcon from '@/assets/onboarding/close.svg'
 
 interface ScannerModalProps {
   isOpen: boolean
@@ -152,57 +154,82 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
     }
   }, [isOpen, onClose, onScanComplete])
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 z-50 flex flex-col">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-
-      {/* Modal Sheet */}
-      <div className="absolute bottom-0 left-0 right-0 h-[90%] bg-white rounded-t-3xl flex flex-col overflow-hidden">
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-        </div>
-
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 pb-4">
-          <h2 className="text-xl font-bold text-black">Scan Lebanese ID</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100"
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-50 flex flex-col bg-black"
+        >
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            className="flex items-start justify-between p-4 pt-6"
           >
-            <span className="text-xl text-gray-600">×</span>
-          </button>
-        </div>
+            <div className="flex-1" />
+            <button
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1C1C1C]"
+            >
+              <img src={closeIcon} alt="close" className="w-5 h-5" />
+            </button>
+          </motion.div>
 
-        {/* Scanner Container */}
-        <div className="flex-1 relative bg-black">
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black">
-              <p className="text-white">Initializing camera...</p>
-            </div>
-          )}
-          {error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black p-4">
-              <p className="text-white text-center">{error}</p>
-            </div>
-          )}
-          <div
-            id="scanner-container"
-            ref={scannerContainerRef}
-            className="w-full h-full"
-          />
-        </div>
+          {/* Title Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.3 }}
+            className="px-4 pb-4 text-center"
+          >
+            <h1 className="font-black text-2xl text-white mb-2">Scan your Lebanese ID</h1>
+            <p className="font-medium text-sm text-gray-400">
+              We use it to verify your identity and <br/>create your personal Health Space
+            </p>
+          </motion.div>
 
-        {/* Instructions */}
-        <div className="p-4 bg-white">
-          <p className="text-center text-gray-600">
-            Position your Lebanese ID within the frame
-          </p>
-        </div>
-      </div>
-    </div>
+          {/* Scanner Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="flex-1 relative mx-4 rounded-2xl overflow-hidden"
+          >
+            {isLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#1C1C1C]">
+                <p className="text-white">Initializing camera...</p>
+              </div>
+            )}
+            {error && (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#1C1C1C] p-4">
+                <p className="text-white text-center">{error}</p>
+              </div>
+            )}
+            <div
+              id="scanner-container"
+              ref={scannerContainerRef}
+              className="w-full h-full"
+            />
+          </motion.div>
+
+          {/* Disclaimer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25, duration: 0.3 }}
+            className="p-4 pb-8"
+          >
+            <p className="text-center font-bold text-sm text-gray-400">
+              Your data stays private on your device
+            </p>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

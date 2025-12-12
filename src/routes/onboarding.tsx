@@ -26,7 +26,7 @@ function OnboardingPage() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      await new Promise(resolve => setTimeout(resolve, 10000))
 
       // Mock backend response
       console.log('Image successfully sent to backend')
