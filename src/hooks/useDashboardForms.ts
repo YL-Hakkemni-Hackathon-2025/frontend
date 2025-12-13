@@ -52,7 +52,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (!file || file.type !== 'application/pdf') return
+    if (!file || (file.type !== 'application/pdf' && file.type !== 'image/png')) return
     if (!accessToken) {
       setUploadError('No access token available')
       return

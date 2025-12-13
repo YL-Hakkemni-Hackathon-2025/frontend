@@ -54,7 +54,7 @@ export function DocumentForm({
             ref={fileInputRef}
             type="file"
             id="pdf-upload"
-            accept=".pdf"
+            accept=".pdf,.png,image/png,application/pdf"
             onChange={onFileChange}
             className="hidden"
             disabled={isUploading}
@@ -97,26 +97,49 @@ export function DocumentForm({
                 Tap to pick
               </p>
             ) : pdfPreviewUrl ? (
-              <iframe
-                src={`${pdfPreviewUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
-                className="pointer-events-none"
-                style={{
-                  border: 'none',
-                  width: '100%',
-                  height: '250px',
-                  transform: 'scale(0.7)',
-                  transformOrigin: 'center center',
-                }}
-              />
+              form.file.type === 'image/png' ? (
+                <img
+                  src={pdfPreviewUrl}
+                  alt="Document preview"
+                  className="pointer-events-none object-contain"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    maxHeight: '175px',
+                  }}
+                />
+              ) : (
+                <iframe
+                  src={`${pdfPreviewUrl}#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className="pointer-events-none"
+                  style={{
+                    border: 'none',
+                    width: '100%',
+                    height: '250px',
+                    transform: 'scale(0.7)',
+                    transformOrigin: 'center center',
+                  }}
+                />
+              )
             ) : (
               <div className="flex flex-col items-center gap-3">
-                <svg
-                  className="w-12 h-12 text-red-500"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-3 9h4v2h-4v-2zm0 3h4v2h-4v-2zm-2-3h1v5H8v-5z"/>
-                </svg>
+                {form.file.type === 'image/png' ? (
+                  <svg
+                    className="w-12 h-12 text-blue-500"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                  </svg>
+                ) : (
+                  <svg
+                    className="w-12 h-12 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zm-3 9h4v2h-4v-2zm0 3h4v2h-4v-2zm-2-3h1v5H8v-5z"/>
+                  </svg>
+                )}
                 <p
                   style={{
                     fontFamily: 'Inter',
