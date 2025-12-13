@@ -90,9 +90,11 @@ export class AllergyResponseDto {
 }
 
 export class AllergySummaryDto {
-  id!: string;
-  allergen!: string;
-  type!: AllergyType;
-  severity?: AllergySeverity;
+    id!: string;
+    allergen!: string;
+    type!: AllergyType;
+    severity?: AllergySeverity;
+    reaction?: string;
+    aiRecommendation?: string;
 }
 

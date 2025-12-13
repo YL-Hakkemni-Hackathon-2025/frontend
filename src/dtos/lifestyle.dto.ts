@@ -66,8 +66,9 @@ export class LifestyleResponseDto {
 }
 
 export class LifestyleSummaryDto {
-  id!: string;
-  category!: LifestyleCategory;
-  description!: string;
+    id!: string;
+    category!: LifestyleCategory;
+    description!: string;
+    frequency?: string;
+    aiRecommendation?: string;
 }
-
