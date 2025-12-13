@@ -154,7 +154,8 @@ function OnboardingPage() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 max-h-[100%] bg-white rounded-t-3xl z-50 flex flex-col items-center px-6 py-4"style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+              className="fixed bottom-0 left-0 right-0 max-h-full bg-white rounded-t-3xl z-50 flex flex-col items-center px-6 py-4"
+              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
             >
               <div className="w-12 h-12 bg-[#00970F] rounded-full flex items-center justify-center mb-6">
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,7 +182,7 @@ function OnboardingPage() {
               <button
                 onClick={() => navigate({ to: '/dashboard' })}
                 className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-auto"
-                style={{ marginBottom: 'max(0.5rem, env(safe-area-inset-bottom, 3rem))' }}
+                style={{ marginBottom: 'max(3rem, calc(env(safe-area-inset-bottom) + 2rem))' }}
               >
                 <span></span>
                 <p className="text-base font-black text-white">Get started</p>
