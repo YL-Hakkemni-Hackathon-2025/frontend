@@ -1,3 +1,5 @@
+// Common Types
+
 export enum Gender {
     MALE = 'male',
     FEMALE = 'female',
@@ -66,14 +68,19 @@ export enum LifestyleCategory {
 }
 
 export interface HealthPassDataToggles {
+    // Required - cannot be turned off
     name: true;
     gender: true;
     dateOfBirth: true;
+
+    // Optional - can be toggled
     medicalConditions: boolean;
     medications: boolean;
     allergies: boolean;
     lifestyleChoices: boolean;
     documents: boolean;
+
+    // Specific items can be toggled individually
     specificConditions?: string[];
     specificMedications?: string[];
     specificAllergies?: string[];
@@ -87,6 +94,8 @@ export interface AIProcessedDocument {
     documentType: DocumentType;
     extractedText: string;
     confidence: number;
+    isHealthcareRelated: boolean;
+    rejectionReason?: string;
 }
 
 export interface LebanesIdData {
@@ -98,3 +107,4 @@ export interface LebanesIdData {
     last_name: string;
     mom_full_name: string;
 }
+

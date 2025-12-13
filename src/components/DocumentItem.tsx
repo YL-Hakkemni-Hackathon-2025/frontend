@@ -12,12 +12,33 @@ interface DocumentItemProps {
 
 export function DocumentItem({ title, date, aiSummary, isLast, fileUrl }: DocumentItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!fileUrl) return
 
-    // Open the file URL in a new tab (will trigger download for PDFs)
-    window.open(fileUrl, '_blank')
+    setIsDownloading(true)
+    try {
+      // Fetch the file
+      const response = await fetch(fileUrl)
+      const blob = await response.blob()
+
+      // Create a download link
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = title || 'document.pdf'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Download failed:', error)
+      // Fallback to opening in new tab
+      window.open(fileUrl, '_blank')
+    } finally {
+      setIsDownloading(false)
+    }
   }
 
   return (
@@ -68,18 +89,22 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl }: Docume
         {/* Download button */}
         <button
           onClick={handleDownload}
-          disabled={!fileUrl}
+          disabled={!fileUrl || isDownloading}
           className="flex items-center justify-center"
           style={{
             width: '56px',
             height: '56px',
             borderRadius: '50%',
             background: '#F7F7F7',
-            cursor: fileUrl ? 'pointer' : 'not-allowed',
-            opacity: fileUrl ? 1 : 0.5,
+            cursor: fileUrl && !isDownloading ? 'pointer' : 'not-allowed',
+            opacity: fileUrl && !isDownloading ? 1 : 0.5,
           }}
         >
-          <img src={DownloadIcon} alt="Download" className="w-6 h-6" />
+          {isDownloading ? (
+            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <img src={DownloadIcon} alt="Download" className="w-6 h-6" />
+          )}
         </button>
       </div>
 
