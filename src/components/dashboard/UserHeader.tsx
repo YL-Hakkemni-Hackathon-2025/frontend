@@ -19,7 +19,10 @@ export function UserHeader({ firstName, onMenuClick }: UserHeaderProps) {
         </button>
 
         {/* Find a doctor button */}
-        <button className="h-12 px-5 bg-[#011A4B] rounded-full flex items-center justify-center shadow-[0_0_30px_0_#385DA41A]">
+        <button
+          onClick={() => window.open('https://hakkemni.com/pages/apps', '_blank')}
+          className="h-12 px-5 bg-[#011A4B] rounded-full flex items-center justify-center shadow-[0_0_30px_0_#385DA41A]"
+        >
           <p className="text-white font-black text-sm">Find a doctor</p>
         </button>
       </div>

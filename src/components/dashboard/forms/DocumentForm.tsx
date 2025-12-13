@@ -94,7 +94,7 @@ export function DocumentForm({
                   color: '#5C5C5C',
                 }}
               >
-                Tap to pick
+                Upload document
               </p>
             ) : pdfPreviewUrl ? (
               form.file.type === 'image/png' ? (
@@ -187,23 +187,20 @@ export function DocumentForm({
           <p className="text-red-500 text-sm text-center">{uploadError}</p>
         )}
 
-        {/* Document name and Date in row */}
-        <div className="grid grid-cols-2 gap-4">
-          <FormInput
-            label="Document name"
-            placeholder="e.g., CBC Report"
-            value={form.documentName}
-            onChange={(value) => onFormChange({ ...form, documentName: value })}
-            disabled={isUploading}
-          />
-          <FormInput
-            label="Date"
-            type="date"
-            value={form.documentDate}
-            onChange={(value) => onFormChange({ ...form, documentDate: value })}
-            disabled={isUploading}
-          />
-        </div>
+        <FormInput
+          label="Document name"
+          placeholder="e.g., CBC Report"
+          value={form.documentName}
+          onChange={(value) => onFormChange({ ...form, documentName: value })}
+          disabled={isUploading}
+        />
+        <FormInput
+          label="Date"
+          type="date"
+          value={form.documentDate}
+          onChange={(value) => onFormChange({ ...form, documentDate: value })}
+          disabled={isUploading}
+        />
 
         {/* Document type */}
         <FormSelect

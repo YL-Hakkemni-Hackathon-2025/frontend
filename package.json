@@ -19,6 +19,7 @@
     "jotai": "^2.16.0",
     "motion": "^12.23.26",
     "react": "^19.2.0",
+    "react-device-mockup": "^1.0.0",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
     "reflect-metadata": "^0.2.2",
