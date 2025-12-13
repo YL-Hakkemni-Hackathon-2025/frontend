@@ -88,6 +88,18 @@ function DashboardPage() {
     handleSave,
   } = useDashboardForms(authData?.accessToken, refreshUserData)
 
+  // Disable scroll when any form is open
+  useEffect(() => {
+    if (activeForm) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [activeForm])
+
   // Fetch user summary on mount
   useEffect(() => {
     const fetchUserSummary = async () => {
