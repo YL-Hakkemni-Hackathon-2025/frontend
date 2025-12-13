@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useSetAtom } from 'jotai'
 import toast from 'react-hot-toast'
@@ -33,6 +33,18 @@ function OnboardingPage() {
   const setUserDetails = useSetAtom(userDetailsAtom)
   const navigate = useNavigate()
   const setUser = useSetAtom(userAtom)
+
+  // Disable scroll when success sheet is open
+  useEffect(() => {
+    if (showSuccessSheet) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [showSuccessSheet])
 
   const handleScanComplete = async (imageData: string) => {
     setIsSubmitting(true)
