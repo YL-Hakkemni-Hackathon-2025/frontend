@@ -1,5 +1,6 @@
 import { RouterProvider } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
+import { Toaster } from 'react-hot-toast'
 import { router } from './router'
 import { userAtom } from '@/atoms/user.atom'
 
@@ -9,6 +10,34 @@ function App() {
 
   return (
     <>
+      {/* Toast notifications */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#1C1C1C',
+            color: '#fff',
+            borderRadius: '12px',
+            padding: '12px 16px',
+            fontSize: '14px',
+            fontFamily: 'Inter, sans-serif',
+          },
+          error: {
+            iconTheme: {
+              primary: '#FF4B4B',
+              secondary: '#fff',
+            },
+          },
+          success: {
+            iconTheme: {
+              primary: '#00970F',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+
       {/* Desktop warning - hidden on mobile (md breakpoint and up shows this) */}
       <div className="hidden md:flex h-screen w-screen items-center justify-center bg-gray-900 text-white p-8">
         <div className="text-center max-w-md">

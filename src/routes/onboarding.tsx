@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useSetAtom } from 'jotai'
+import toast from 'react-hot-toast'
 import backgroundImg from '@/assets/onboarding/background.png'
 import logoImg from '@/assets/onboarding/logo.svg'
 import lebanonFlagImg from '@/assets/onboarding/lebanon.svg'
@@ -100,7 +101,9 @@ function OnboardingPage() {
       setShowSuccessSheet(true)
     } catch (err) {
       console.error('Failed to verify ID:', err)
-      setError(err instanceof Error ? err.message : 'Failed to verify ID card. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to verify ID card. Please try again.'
+      setError(errorMessage)
+      toast.error('ID verification failed. Please try again.')
     } finally {
       setIsSubmitting(false)
     }

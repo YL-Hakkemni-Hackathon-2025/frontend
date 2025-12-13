@@ -95,5 +95,7 @@ export class DocumentSummaryDto {
   documentName!: string;
   documentType!: DocumentType;
   documentDate?: Date;
+  fileUrl?: string;
+  notes?: string;
 }
 

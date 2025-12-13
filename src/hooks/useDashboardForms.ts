@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import toast from 'react-hot-toast'
 import { apiUrl } from '@/utils/api'
 
 export type FormType = 'medical-condition' | 'medication' | 'allergy' | 'lifestyle' | 'document' | null
@@ -99,6 +100,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
         }))
       } else {
         setUploadError(result.message || 'Failed to process document. Please try again.')
+        toast.error('Failed to process document. Please try again.')
         // Reset file on error
         setPdfPreviewUrl(null)
         setDocumentForm(prev => ({ ...prev, file: null }))
@@ -109,6 +111,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
     } catch (error) {
       console.error('Error uploading document:', error)
       setUploadError('An error occurred while uploading. Please try again.')
+      toast.error('Failed to upload document. Please try again.')
       // Reset file on error
       setPdfPreviewUrl(null)
       setDocumentForm(prev => ({ ...prev, file: null }))
@@ -194,7 +197,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
         case 'document': {
           // Confirm the uploaded document
           if (!documentForm.documentId) {
-            alert('Please upload a document first.')
+            toast.error('Please upload a document first.')
             setIsSaving(false)
             return
           }
@@ -224,11 +227,12 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
 
           if (confirmResponse.ok && confirmResult.success) {
             console.log('Successfully confirmed document:', confirmResult.data)
+            toast.success('Document saved successfully!')
             handleCloseBottomSheet()
             onSuccess?.()
           } else {
             console.error('Failed to confirm document:', confirmResult)
-            alert(confirmResult.message || 'Failed to save document. Please try again.')
+            toast.error(confirmResult.message || 'Failed to save document. Please try again.')
           }
           setIsSaving(false)
           return
@@ -256,15 +260,16 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
 
       if (response.ok && result.success) {
         console.log('Successfully created:', activeForm, result.data)
+        toast.success('Saved successfully!')
         handleCloseBottomSheet()
         onSuccess?.()
       } else {
         console.error('Failed to create:', result)
-        alert(result.message || 'Failed to save. Please try again.')
+        toast.error(result.message || 'Failed to save. Please try again.')
       }
     } catch (error) {
       console.error('Error saving:', error)
-      alert('An error occurred. Please try again.')
+      toast.error('An error occurred. Please try again.')
     } finally {
       setIsSaving(false)
     }
