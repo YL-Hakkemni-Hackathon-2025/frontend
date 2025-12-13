@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import { useState, useEffect } from 'react'
 import { useAtomValue } from 'jotai'
+import toast from 'react-hot-toast'
 import { userAtom } from '@/atoms/user.atom'
 import { AppointmentSpecialty } from '@/utils/global.types'
 import { apiUrl } from '@/utils/api'
@@ -80,6 +81,7 @@ function GenerateHealthPassPage() {
     const createHealthPass = async () => {
       if (!authData?.accessToken) {
         setError('Not authenticated')
+        toast.error('Not authenticated. Please log in again.')
         return
       }
 
@@ -106,10 +108,12 @@ function GenerateHealthPassPage() {
         } else {
           console.error('Failed to create health pass:', result)
           setError(result.message || 'Failed to generate HealthPass')
+          toast.error(result.message || 'Failed to generate HealthPass. Please try again.')
         }
       } catch (err) {
         console.error('Error creating health pass:', err)
         setError('An error occurred while generating your HealthPass')
+        toast.error('An error occurred. Please try again.')
       }
     }
 

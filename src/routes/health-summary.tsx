@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import AppStoreDownload from '@/assets/AppStoreDownload.svg'
 import PlayStoreDownload from '@/assets/PlayStoreDownload.svg'
 import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
@@ -81,6 +82,7 @@ function HealthSummaryPage() {
     const fetchHealthPass = async () => {
       if (!code) {
         setError('No access code provided')
+        toast.error('No access code provided')
         setIsLoading(false)
         return
       }
@@ -96,10 +98,12 @@ function HealthSummaryPage() {
           setHealthPass(result.data)
         } else {
           setError(result.message || 'Failed to fetch health pass')
+          toast.error(result.message || 'Failed to load HealthPass')
         }
       } catch (err) {
         console.error('Error fetching health pass:', err)
         setError('An error occurred while loading the HealthPass')
+        toast.error('Failed to load HealthPass. Please try again.')
       } finally {
         setIsLoading(false)
       }

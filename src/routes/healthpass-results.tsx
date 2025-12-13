@@ -2,6 +2,7 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useState, useEffect } from 'react'
 import { useAtomValue } from 'jotai'
+import toast from 'react-hot-toast'
 import { HealthPassCard } from '@/components/HealthPassCard'
 import AppleWalletIcon from '@/assets/AppleWallet.svg'
 import UserDataIcon from '@/assets/UserDataIcon.svg'
@@ -112,6 +113,7 @@ function HealthPassResultsPage() {
   const createToggleHandler = (itemType: 'medicalCondition' | 'medication' | 'allergy' | 'lifestyle' | 'document') => {
     return async (itemId: string, isEnabled: boolean) => {
       if (!healthPassId || !authData?.accessToken) {
+        toast.error('Not authenticated')
         throw new Error('Not authenticated')
       }
 
@@ -131,6 +133,7 @@ function HealthPassResultsPage() {
       const result = await response.json()
 
       if (!response.ok || !result.success) {
+        toast.error(result.message || 'Failed to update item')
         throw new Error(result.message || 'Failed to toggle item')
       }
     }

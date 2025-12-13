@@ -1,6 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
+import toast from 'react-hot-toast'
 import { UserFullSummaryDto } from '@/dtos/user.dto'
 import { UserHeader } from '@/components/dashboard/UserHeader'
 import { HealthPassCard } from '@/components/dashboard/HealthPassCard'
@@ -109,9 +110,11 @@ function DashboardPage() {
           setUser(result.data)
         } else {
           console.error('Failed to fetch user summary:', result)
+          toast.error('Failed to load your health data')
         }
       } catch (error) {
         console.error('Error fetching user summary:', error)
+        toast.error('Failed to load your health data')
       } finally {
         setIsLoading(false)
       }
