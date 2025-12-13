@@ -154,8 +154,11 @@ function OnboardingPage() {
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 max-h-[60%] bg-white rounded-t-3xl z-50 flex flex-col items-center px-6 py-4"
-              style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
+              className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-50 flex flex-col items-center px-6 py-4"
+              style={{
+                height: 'calc(55% + env(safe-area-inset-bottom) + 2rem)',
+                paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+              }}
             >
               <div className="w-12 h-12 bg-[#00970F] rounded-full flex items-center justify-center mb-6">
                 <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
