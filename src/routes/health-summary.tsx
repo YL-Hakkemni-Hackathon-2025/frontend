@@ -275,16 +275,6 @@ function HealthSummaryPage() {
           </div>
         )}
 
-        {/* AI Recommendations if available */}
-        {healthPass.aiRecommendations && (
-          <div
-            className="w-full bg-blue-50 rounded-xl p-4 mb-4"
-            style={{ border: '1px solid #003AAB20' }}
-          >
-            <h3 className="font-bold text-sm text-[#003AAB] mb-2">AI Summary</h3>
-            <p className="text-sm text-gray-700">{healthPass.aiRecommendations}</p>
-          </div>
-        )}
 
         {/* Documents section */}
         {healthPass.documents && healthPass.documents.length > 0 && (
@@ -293,7 +283,7 @@ function HealthSummaryPage() {
             items={healthPass.documents.map(doc => ({
               title: doc.documentName,
               date: doc.documentDate ? formatDate(doc.documentDate) : 'No date',
-              aiSummary: doc.notes || '',
+              aiSummary: doc.aiRecommendation || doc.notes || '',
               fileUrl: doc.fileUrl,
             }))}
           />
@@ -307,7 +297,7 @@ function HealthSummaryPage() {
             icon={MedicalConditionIcon}
             items={healthPass.medicalConditions.map(condition => ({
               title: condition.name,
-              description: condition.diagnosedDate ? `Diagnosed: ${formatDate(condition.diagnosedDate)}` : 'No diagnosis date',
+              description: condition.aiRecommendation || (condition.diagnosedDate ? `Diagnosed: ${formatDate(condition.diagnosedDate)}` : 'No diagnosis date'),
               isRelevant: true,
             }))}
           />
@@ -321,7 +311,7 @@ function HealthSummaryPage() {
             icon={MedicationIcon}
             items={healthPass.medications.map(medication => ({
               title: medication.medicationName,
-              description: medication.dosageAmount ? `Dosage: ${medication.dosageAmount}` : 'No dosage info',
+              description: medication.aiRecommendation || (medication.dosageAmount ? `Dosage: ${medication.dosageAmount}` : 'No dosage info'),
               isRelevant: true,
             }))}
           />
@@ -335,7 +325,7 @@ function HealthSummaryPage() {
             icon={LifeStyleIcon}
             items={healthPass.lifestyleChoices.map(lifestyle => ({
               title: lifestyle.description,
-              description: lifestyle.category || 'Lifestyle factor',
+              description: lifestyle.aiRecommendation || lifestyle.category || 'Lifestyle factor',
               isRelevant: true,
             }))}
           />
@@ -349,7 +339,7 @@ function HealthSummaryPage() {
             icon={AllergyIcon}
             items={healthPass.allergies.map(allergy => ({
               title: allergy.allergen,
-              description: allergy.severity ? `Severity: ${allergy.severity}` : 'No severity info',
+              description: allergy.aiRecommendation || (allergy.severity ? `Severity: ${allergy.severity}` : 'No severity info'),
               isRelevant: true,
             }))}
           />

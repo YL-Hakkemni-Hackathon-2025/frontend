@@ -75,9 +75,11 @@ export class MedicationResponseDto {
 }
 
 export class MedicationSummaryDto {
-  id!: string;
-  medicationName!: string;
-  dosageAmount!: string;
-  frequency!: MedicationFrequency;
+    id!: string;
+    medicationName!: string;
+    dosageAmount!: string;
+    frequency!: MedicationFrequency;
+    notes?: string;
+    aiRecommendation?: string;
 }
 

@@ -91,11 +91,11 @@ export class DocumentUploadResponseDto {
 }
 
 export class DocumentSummaryDto {
-  id!: string;
-  documentName!: string;
-  documentType!: DocumentType;
-  documentDate?: Date;
-  fileUrl?: string;
-  notes?: string;
+    id!: string;
+    documentName!: string;
+    documentType!: DocumentType;
+    documentDate?: Date;
+    notes?: string;
+    fileUrl?: string;
+    aiRecommendation?: string;
 }
-

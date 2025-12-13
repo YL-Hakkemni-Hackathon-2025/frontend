@@ -61,6 +61,11 @@ export class DataTogglesDto implements Partial<HealthPassDataToggles> {
     @IsOptional()
     @IsArray()
     @IsString({ each: true })
+    specificLifestyles?: string[];
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
     specificDocuments?: string[];
 }
 
@@ -159,7 +164,6 @@ export class HealthPassPreviewDto {
     // AI recommendations
     aiRecommendations?: string;
 
-    // AI-generated profile summary
     aiProfileSummary?: string;
 }
 
