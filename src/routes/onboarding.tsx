@@ -180,7 +180,7 @@ function OnboardingPage() {
 
               <button
                 onClick={() => navigate({ to: '/dashboard' })}
-                className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-2"
+                className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-2 mb-[env(safe-area-inset-bottom)]"
               >
                 <span></span>
                 <p className="text-base font-black text-white">Get started</p>
