@@ -17,11 +17,13 @@ export default defineConfig({
     },
   },
   server: {
+    host: true, // Allow network access
     proxy: {
       '/api': {
         target: 'https://hakkemni-api.internalizable.dev',
         changeOrigin: true,
         secure: true,
+        rewrite: (path) => path,
       },
     },
   },
