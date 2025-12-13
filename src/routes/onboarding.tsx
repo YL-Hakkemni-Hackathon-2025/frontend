@@ -49,26 +49,26 @@ function OnboardingPage() {
       const byteArray = new Uint8Array(byteNumbers)
       const blob = new Blob([byteArray], { type: 'image/jpeg' })
 
-      // Save the image for debugging - creates a download link
-      const debugUrl = URL.createObjectURL(blob)
-      const debugLink = document.createElement('a')
-      debugLink.href = debugUrl
-      debugLink.download = `id-card-${Date.now()}.jpg`
-      debugLink.click()
-      URL.revokeObjectURL(debugUrl)
-      console.log('Image saved for debugging. Base64 length:', imageData.length, 'Blob size:', blob.size)
+      console.log('Image converted. Base64 length:', imageData.length, 'Blob size:', blob.size)
 
       // Create FormData and append the image
       const formData = new FormData()
       formData.append('image', blob, 'id-card.jpg')
 
       // Call the verify-id API
-      const response = await fetch(apiUrl('/api/v1/auth/verify-id'), {
+      const apiEndpoint = apiUrl('/api/v1/auth/verify-id')
+      console.log('Calling API:', apiEndpoint)
+
+      const response = await fetch(apiEndpoint, {
         method: 'POST',
         body: formData,
+        mode: 'cors',
+        credentials: 'omit',
       })
 
+      console.log('Response status:', response.status)
       const result = await response.json()
+      console.log('Response data:', result)
 
       if (!response.ok || !result.success) {
         throw new Error(result.message || 'Failed to verify ID card')
