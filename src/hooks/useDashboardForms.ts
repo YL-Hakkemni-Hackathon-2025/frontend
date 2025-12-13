@@ -81,8 +81,23 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
       const result = await response.json()
 
       if (response.ok && result.success) {
-        // Populate form with AI suggestions
         const data = result.data
+
+        // Check if document is healthcare related
+        if (data.isHealthcareRelated === false || data.rejectionReason) {
+          const errorMessage = data.rejectionReason || 'This document does not appear to be healthcare-related.'
+          setUploadError(errorMessage)
+          toast.error(errorMessage)
+          // Reset file on rejection
+          setPdfPreviewUrl(null)
+          setDocumentForm(prev => ({ ...prev, file: null }))
+          if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+          }
+          return
+        }
+
+        // Populate form with AI suggestions
         const suggestions = data.aiSuggestions || {}
 
         // Use the fileUrl from API response for preview
@@ -100,7 +115,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
         }))
       } else {
         setUploadError(result.message || 'Failed to process document. Please try again.')
-        toast.error('Failed to process document. Please try again.')
+        toast.error(result.message || 'Failed to process document. Please try again.')
         // Reset file on error
         setPdfPreviewUrl(null)
         setDocumentForm(prev => ({ ...prev, file: null }))

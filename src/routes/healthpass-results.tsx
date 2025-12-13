@@ -328,6 +328,43 @@ function HealthPassResultsPage() {
         <img src={UserDataIcon} alt="User Data" className="w-6 h-6" />
       </div>
 
+      {/* AI Profile Summary section */}
+      {healthPass.aiProfileSummary && (
+        <div
+          className="w-full bg-gradient-to-r from-[#001568] to-[#0057FF] rounded-xl flex flex-col px-6 py-4"
+          style={{
+            marginTop: '16px',
+            boxShadow: '0px 0px 30px 0px #0000000D',
+          }}
+        >
+          <h3
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 700,
+              fontSize: '14px',
+              lineHeight: '121%',
+              letterSpacing: '0%',
+              color: 'rgba(255, 255, 255, 0.7)',
+              marginBottom: '8px',
+            }}
+          >
+            AI Profile Summary
+          </h3>
+          <p
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '150%',
+              letterSpacing: '0%',
+              color: '#FFFFFF',
+            }}
+          >
+            {healthPass.aiProfileSummary}
+          </p>
+        </div>
+      )}
+
       {/* Medical conditions section */}
       {healthPass.medicalConditions.length > 0 && (
         <MedicalInfoSection
@@ -337,6 +374,7 @@ function HealthPassResultsPage() {
             title: item.data.name,
             description: item.aiRecommendation || (item.isRelevant ? `Relevant to ${specialtyName.toLowerCase()} care` : `Not relevant to ${specialtyName.toLowerCase()} care`),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medicalCondition')}
         />
@@ -351,6 +389,7 @@ function HealthPassResultsPage() {
             title: item.data.medicationName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant for treatment decisions' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medication')}
         />
@@ -365,6 +404,7 @@ function HealthPassResultsPage() {
             title: item.data.allergen,
             description: item.aiRecommendation || (item.isRelevant ? 'Important for treatment safety' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('allergy')}
         />
@@ -379,6 +419,7 @@ function HealthPassResultsPage() {
             title: item.data.description,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant lifestyle factor' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('lifestyle')}
         />
@@ -393,6 +434,7 @@ function HealthPassResultsPage() {
             title: item.data.documentName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant document' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('document')}
         />

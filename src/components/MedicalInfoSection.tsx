@@ -5,6 +5,7 @@ interface MedicalInfoItem {
   title: string
   description: string
   isRelevant: boolean
+  isEnabled?: boolean
 }
 
 interface MedicalInfoSectionProps {
@@ -51,6 +52,7 @@ export function MedicalInfoSection({ title, items, showToggle = true, icon, onTo
           showToggle={showToggle}
           icon={icon}
           itemId={item.id}
+          initialEnabled={item.isEnabled}
           onToggle={onToggle}
         />
       ))}
