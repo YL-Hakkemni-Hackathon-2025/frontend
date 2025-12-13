@@ -239,6 +239,42 @@ function HealthSummaryPage() {
           Relevant Medical Summary
         </h2>
 
+        {/* AI Profile Summary section */}
+        {healthPass.aiProfileSummary && (
+          <div
+            className="w-full bg-gradient-to-r from-[#001568] to-[#0057FF] rounded-xl flex flex-col px-6 py-4 mb-4"
+            style={{
+              boxShadow: '0px 0px 30px 0px #0000000D',
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 700,
+                fontSize: '14px',
+                lineHeight: '121%',
+                letterSpacing: '0%',
+                color: 'rgba(255, 255, 255, 0.7)',
+                marginBottom: '8px',
+              }}
+            >
+              AI Profile Summary
+            </h3>
+            <p
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '150%',
+                letterSpacing: '0%',
+                color: '#FFFFFF',
+              }}
+            >
+              {healthPass.aiProfileSummary}
+            </p>
+          </div>
+        )}
+
         {/* AI Recommendations if available */}
         {healthPass.aiRecommendations && (
           <div

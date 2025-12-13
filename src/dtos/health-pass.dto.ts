@@ -158,6 +158,9 @@ export class HealthPassPreviewDto {
 
     // AI recommendations
     aiRecommendations?: string;
+
+    // AI-generated profile summary
+    aiProfileSummary?: string;
 }
 
 export class HealthPassSummaryDto {
