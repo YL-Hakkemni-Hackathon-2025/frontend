@@ -1,6 +1,7 @@
 import { RouterProvider } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { Toaster } from 'react-hot-toast'
+import { IPhoneMockup } from 'react-device-mockup'
 import { router } from './router'
 import { userAtom } from '@/atoms/user.atom'
 
@@ -38,18 +39,16 @@ function App() {
         }}
       />
 
-      {/* Desktop warning - hidden on mobile (md breakpoint and up shows this) */}
-      <div className="hidden md:flex h-screen w-screen items-center justify-center bg-gray-900 text-white p-8">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">📱</div>
-          <h1 className="text-2xl font-bold mb-4">Mobile Only</h1>
-          <p className="text-gray-400">
-            This application is designed for mobile devices only. Please open it on your phone or resize your browser window.
-          </p>
-        </div>
+      {/* Desktop - Show mobile UI in iOS mockup */}
+      <div className="hidden md:flex h-screen w-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
+        <IPhoneMockup screenWidth={370} screenType="island" hideStatusBar hideNavBar>
+          <div className="relative w-full h-full overflow-hidden" style={{ transform: 'translateZ(0)' }}>
+            <RouterProvider router={router} context={{ isAuthenticated }} />
+          </div>
+        </IPhoneMockup>
       </div>
 
-      {/* Mobile app container - visible only on mobile (hidden on md and up) */}
+      {/* Mobile - Full screen */}
       <div className="md:hidden min-h-screen bg-white">
         <RouterProvider router={router} context={{ isAuthenticated }} />
       </div>

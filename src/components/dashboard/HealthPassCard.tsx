@@ -26,7 +26,7 @@ export function HealthPassCard({ hasHealthData }: HealthPassCardProps) {
         <img src={qrCodeIcon} alt="qrCodImage" />
         <div className="flex flex-col">
           <h2 className="font-black text-base text-black">HealthPass</h2>
-          <p className="font-medium text-base text-black mt-1">
+          <p className="text-black font-regular text-xs sm:text-xs mt-0">
             {hasHealthData
               ? 'Create a tailored summary for your next appointment'
               : "Prepare a visit summary once you've added medical information"}

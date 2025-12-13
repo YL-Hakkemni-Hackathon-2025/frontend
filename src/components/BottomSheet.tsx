@@ -28,12 +28,15 @@ export function BottomSheet({ isOpen, onClose, onSave, isValid, children }: Bott
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-61 max-h-[85vh] overflow-y-auto"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+            className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl z-61 flex flex-col"
+            style={{
+              paddingBottom: 'env(safe-area-inset-bottom)',
+              maxHeight: '85vh',
+            }}
           >
-            <div className="p-6 pb-8">
+            <div className="p-6 pb-8 overflow-y-auto flex-1">
               {/* Top buttons row */}
-              <div className="flex flex-row items-center justify-between mb-6">
+              <div className="flex flex-row items-center justify-between mb-6 sticky top-0 bg-white z-10 -mx-6 px-6 pb-4">
                 {/* Cancel button */}
                 <button
                   onClick={onClose}
