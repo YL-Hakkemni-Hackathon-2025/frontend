@@ -185,6 +185,7 @@ function OnboardingPage() {
               <button
                 onClick={() => navigate({ to: '/dashboard' })}
                 className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-auto"
+                style={{ marginBottom: 'max(0.5rem, env(safe-area-inset-bottom, 3rem))' }}
               >
                 <span></span>
                 <p className="text-base font-black text-white">Get started</p>
