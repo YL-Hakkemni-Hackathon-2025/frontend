@@ -7,7 +7,7 @@ interface UserHeaderProps {
 
 export function UserHeader({ firstName, onMenuClick }: UserHeaderProps) {
   return (
-    <div className="h-[33vh] bg-gradient-to-b from-[#003AAB] to-[#001745] rounded-b-[40px]">
+    <div className="min-h-[33vh] bg-gradient-to-b from-[#003AAB] to-[#001745] rounded-b-[40px] pb-20">
       {/* Top navigation row */}
       <div className="flex items-center justify-between px-4 pt-12">
         {/* Menu button */}
@@ -25,9 +25,9 @@ export function UserHeader({ firstName, onMenuClick }: UserHeaderProps) {
       </div>
 
       {/* Welcome text section */}
-      <div className="flex flex-col items-center justify-center mt-8 px-6">
-        <h1 className="text-white font-black text-3xl text-center">Welcome {firstName}</h1>
-        <p className="text-white font-bold text-sm text-center mt-2">
+      <div className="flex flex-col items-center justify-center mt-6 px-6">
+        <h1 className="text-white font-black text-2xl sm:text-3xl text-center">Welcome {firstName}</h1>
+        <p className="text-white font-bold text-xs sm:text-sm text-center mt-2">
           This is your private medical space. Nothing is shared without your approval.
         </p>
       </div>
