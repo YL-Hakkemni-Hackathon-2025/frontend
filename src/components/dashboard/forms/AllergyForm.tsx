@@ -8,9 +8,13 @@ interface AllergyFormProps {
   isOpen: boolean
   form: { allergen: string; type: string; severity: string; reaction: string; diagnosedDate: string; notes: string }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onFormChange: (form: { allergen: string; type: string; severity: string; reaction: string; diagnosedDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 const allergyTypeOptions = [
@@ -29,9 +33,9 @@ const allergySeverityOptions = [
   { value: AllergySeverity.LIFE_THREATENING, label: 'Life-threatening' },
 ]
 
-export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: AllergyFormProps) {
+export function AllergyForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: AllergyFormProps) {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         <FormInput
           label="Allergen"

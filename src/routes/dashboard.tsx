@@ -63,6 +63,10 @@ function DashboardPage() {
   const {
     activeForm,
     setActiveForm,
+    isSaving,
+    isDeleting,
+    editingItemId,
+    setEditingItemId,
     isUploading,
     uploadError,
     medicalConditionForm,
@@ -86,6 +90,7 @@ function DashboardPage() {
     handleFileChange,
     handleRemoveFile,
     handleSave,
+    handleDelete,
   } = useDashboardForms(authData?.accessToken, refreshUserData)
 
   // Disable scroll when any form is open
@@ -140,6 +145,73 @@ function DashboardPage() {
     navigate({ to: '/onboarding' })
   }
 
+  // Click handlers for editing items
+  const handleMedicalConditionClick = (id: string) => {
+    const condition = user?.medicalConditions.find(c => c.id === id)
+    if (condition) {
+      setMedicalConditionForm({
+        name: condition.name,
+        diagnosedDate: condition.diagnosedDate ? new Date(condition.diagnosedDate).toISOString().split('T')[0] : '',
+        notes: condition.notes || '',
+      })
+      setEditingItemId(id)
+      setActiveForm('medical-condition')
+    }
+  }
+
+  const handleMedicationClick = (id: string) => {
+    const medication = user?.medications.find(m => m.id === id)
+    if (medication) {
+      setMedicationForm({
+        medicationName: medication.medicationName,
+        dosageAmount: medication.dosageAmount || '',
+        frequency: medication.frequency || '',
+        startDate: medication.startDate ? new Date(medication.startDate).toISOString().split('T')[0] : '',
+        endDate: medication.endDate ? new Date(medication.endDate).toISOString().split('T')[0] : '',
+        notes: medication.notes || '',
+      })
+      setEditingItemId(id)
+      setActiveForm('medication')
+    }
+  }
+
+  const handleAllergyClick = (id: string) => {
+    const allergy = user?.allergies.find(a => a.id === id)
+    if (allergy) {
+      setAllergyForm({
+        allergen: allergy.allergen,
+        type: allergy.type,
+        severity: allergy.severity || '',
+        reaction: allergy.reaction || '',
+        diagnosedDate: allergy.diagnosedDate ? new Date(allergy.diagnosedDate).toISOString().split('T')[0] : '',
+        notes: allergy.notes || '',
+      })
+      setEditingItemId(id)
+      setActiveForm('allergy')
+    }
+  }
+
+  const handleLifestyleClick = (id: string) => {
+    const lifestyle = user?.lifestyles.find(l => l.id === id)
+    if (lifestyle) {
+      setLifestyleForm({
+        category: lifestyle.category,
+        description: lifestyle.description,
+        frequency: lifestyle.frequency || '',
+        startDate: lifestyle.startDate ? new Date(lifestyle.startDate).toISOString().split('T')[0] : '',
+        notes: lifestyle.notes || '',
+      })
+      setEditingItemId(id)
+      setActiveForm('lifestyle')
+    }
+  }
+
+  const handleDocumentClick = (id: string) => {
+    // Document editing will be handled differently since it requires the file
+    // For now, we can just show a message or implement read-only view
+    console.log('Document click:', id)
+  }
+
   const hasHealthData = user ? (
     (user.medicalConditions?.length ?? 0) > 0 ||
     (user.medications?.length ?? 0) > 0 ||
@@ -183,7 +255,15 @@ function DashboardPage() {
       {hasHealthData && (
         <>
           <SearchBar value={searchQuery} onChange={setSearchQuery} />
-          <HealthDataSections user={user} searchQuery={searchQuery} />
+          <HealthDataSections
+            user={user}
+            searchQuery={searchQuery}
+            onMedicalConditionClick={handleMedicalConditionClick}
+            onMedicationClick={handleMedicationClick}
+            onAllergyClick={handleAllergyClick}
+            onLifestyleClick={handleLifestyleClick}
+            onDocumentClick={handleDocumentClick}
+          />
         </>
       )}
 
@@ -202,42 +282,61 @@ function DashboardPage() {
         isOpen={activeForm === 'medical-condition'}
         form={medicalConditionForm}
         isValid={isMedicalConditionValid}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        isEditMode={!!editingItemId}
         onFormChange={setMedicalConditionForm}
         onClose={handleCloseBottomSheet}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
 
       <MedicationForm
         isOpen={activeForm === 'medication'}
         form={medicationForm}
         isValid={isMedicationValid}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        isEditMode={!!editingItemId}
         onFormChange={setMedicationForm}
         onClose={handleCloseBottomSheet}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
 
       <AllergyForm
         isOpen={activeForm === 'allergy'}
         form={allergyForm}
         isValid={isAllergyValid}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        isEditMode={!!editingItemId}
         onFormChange={setAllergyForm}
         onClose={handleCloseBottomSheet}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
 
       <LifestyleForm
         isOpen={activeForm === 'lifestyle'}
         form={lifestyleForm}
         isValid={isLifestyleValid}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        isEditMode={!!editingItemId}
         onFormChange={setLifestyleForm}
         onClose={handleCloseBottomSheet}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
 
       <DocumentForm
         isOpen={activeForm === 'document'}
         form={documentForm}
         isValid={isDocumentValid}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        isEditMode={!!editingItemId}
         isUploading={isUploading}
         uploadError={uploadError}
         pdfPreviewUrl={pdfPreviewUrl}
@@ -247,6 +346,7 @@ function DashboardPage() {
         onRemoveFile={handleRemoveFile}
         onClose={handleCloseBottomSheet}
         onSave={handleSave}
+        onDelete={handleDelete}
       />
     </div>
   )

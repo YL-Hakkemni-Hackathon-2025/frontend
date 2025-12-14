@@ -8,9 +8,13 @@ interface MedicationFormProps {
   isOpen: boolean
   form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onFormChange: (form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 const frequencyOptions = [
@@ -24,9 +28,9 @@ const frequencyOptions = [
   { value: MedicationFrequency.OTHER, label: 'Other' },
 ]
 
-export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: MedicationFormProps) {
+export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: MedicationFormProps) {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         <FormInput
           label="Medication name"
