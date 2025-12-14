@@ -180,9 +180,7 @@ function DashboardPage() {
     if (allergy) {
       setAllergyForm({
         allergen: allergy.allergen,
-        type: allergy.type,
         severity: allergy.severity || '',
-        reaction: allergy.reaction || '',
         diagnosedDate: allergy.diagnosedDate ? new Date(allergy.diagnosedDate).toISOString().split('T')[0] : '',
         notes: allergy.notes || '',
       })

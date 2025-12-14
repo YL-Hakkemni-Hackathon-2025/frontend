@@ -8,9 +8,10 @@ interface DocumentItemProps {
   aiSummary: string
   isLast?: boolean
   fileUrl?: string
+  onClick?: () => void
 }
 
-export function DocumentItem({ title, date, aiSummary, isLast, fileUrl }: DocumentItemProps) {
+export function DocumentItem({ title, date, aiSummary, isLast, fileUrl, onClick }: DocumentItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -43,7 +44,8 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl }: Docume
 
   return (
     <div
-      className="flex flex-col w-full"
+      className={`flex flex-col w-full ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
       style={{
         paddingTop: '16px',
         paddingBottom: isLast ? '0' : '16px',

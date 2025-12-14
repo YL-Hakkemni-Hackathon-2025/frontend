@@ -281,6 +281,7 @@ function HealthSummaryPage() {
           <DocumentSection
             title="Documents"
             items={healthPass.documents.map(doc => ({
+              id: doc.id,
               title: doc.documentName,
               date: doc.documentDate ? formatDate(doc.documentDate) : 'No date',
               aiSummary: doc.aiRecommendation || doc.notes || '',
