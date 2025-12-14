@@ -59,6 +59,7 @@ export function AutocompleteInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const justSelectedRef = useRef(false)
+  const hasUserTypedRef = useRef(false)
 
   // Fetch suggestions when value changes
   useEffect(() => {
@@ -69,6 +70,11 @@ export function AutocompleteInput({
     // Skip fetch if we just selected a suggestion
     if (justSelectedRef.current) {
       justSelectedRef.current = false
+      return
+    }
+
+    // Skip fetch if user hasn't typed yet (e.g., initial load when editing)
+    if (!hasUserTypedRef.current) {
       return
     }
 
@@ -195,7 +201,10 @@ export function AutocompleteInput({
           type="text"
           placeholder={placeholder}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => {
+            hasUserTypedRef.current = true
+            onChange(e.target.value)
+          }}
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
