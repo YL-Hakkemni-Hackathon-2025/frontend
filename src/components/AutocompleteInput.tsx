@@ -57,7 +57,7 @@ export function AutocompleteInput({
   const authData = useAtomValue(userAtom)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const debounceRef = useRef<NodeJS.Timeout | null>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Fetch suggestions when value changes
   useEffect(() => {
