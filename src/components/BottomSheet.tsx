@@ -5,11 +5,15 @@ interface BottomSheetProps {
   isOpen: boolean
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   children: ReactNode
 }
 
-export function BottomSheet({ isOpen, onClose, onSave, isValid, children }: BottomSheetProps) {
+export function BottomSheet({ isOpen, onClose, onSave, onDelete, isValid, isSaving, isDeleting, isEditMode, children }: BottomSheetProps) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -37,26 +41,49 @@ export function BottomSheet({ isOpen, onClose, onSave, isValid, children }: Bott
             <div className="p-6 pb-8 overflow-y-auto flex-1">
               {/* Top buttons row */}
               <div className="flex flex-row items-center justify-between mb-6 sticky top-0 bg-white z-10 -mx-6 px-6 pb-4">
-                {/* Cancel button */}
-                <button
-                  onClick={onClose}
-                  style={{
-                    fontFamily: 'Inter',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    lineHeight: '121%',
-                    letterSpacing: '0%',
-                    verticalAlign: 'middle',
-                    color: '#FF0000',
-                  }}
-                >
-                  Cancel
-                </button>
+                {/* Cancel/Delete button */}
+                {isEditMode && onDelete ? (
+                  <button
+                    onClick={onDelete}
+                    disabled={isDeleting}
+                    className="flex items-center gap-2"
+                    style={{
+                      fontFamily: 'Inter',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      lineHeight: '121%',
+                      letterSpacing: '0%',
+                      verticalAlign: 'middle',
+                      color: isDeleting ? '#A4A4A4' : '#FF0000',
+                    }}
+                  >
+                    {isDeleting && (
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    )}
+                    {isDeleting ? 'Deleting...' : 'Delete'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={onClose}
+                    style={{
+                      fontFamily: 'Inter',
+                      fontWeight: 700,
+                      fontSize: '16px',
+                      lineHeight: '121%',
+                      letterSpacing: '0%',
+                      verticalAlign: 'middle',
+                      color: '#FF0000',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
 
                 {/* Save button */}
                 <button
-                  disabled={!isValid}
+                  disabled={!isValid || isSaving || isDeleting}
                   onClick={onSave}
+                  className="flex items-center gap-2"
                   style={{
                     fontFamily: 'Inter',
                     fontWeight: 700,
@@ -64,10 +91,13 @@ export function BottomSheet({ isOpen, onClose, onSave, isValid, children }: Bott
                     lineHeight: '121%',
                     letterSpacing: '0%',
                     verticalAlign: 'middle',
-                    color: !isValid ? '#A4A4A4' : '#0057FF',
+                    color: !isValid || isSaving || isDeleting ? '#A4A4A4' : '#0057FF',
                   }}
                 >
-                  Save
+                  {isSaving && (
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  )}
+                  {isSaving ? 'Saving...' : 'Save'}
                 </button>
               </div>
 

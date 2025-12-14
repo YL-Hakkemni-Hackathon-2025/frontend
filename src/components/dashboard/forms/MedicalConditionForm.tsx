@@ -7,21 +7,25 @@ interface MedicalConditionFormProps {
   isOpen: boolean
   form: { name: string; diagnosedDate: string; notes: string }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onFormChange: (form: { name: string; diagnosedDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
-export function MedicalConditionForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: MedicalConditionFormProps) {
+export function MedicalConditionForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: MedicalConditionFormProps) {
+
   const handleSuggestionSelect = (suggestion: MedicalConditionSuggestion) => {
     // Optionally populate notes with description if available
     if (suggestion.description && !form.notes) {
       onFormChange({ ...form, name: suggestion.name, notes: suggestion.description })
     }
   }
-
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         <AutocompleteInput
           label="Condition name"

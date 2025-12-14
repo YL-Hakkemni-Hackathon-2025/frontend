@@ -10,8 +10,12 @@ interface AllergyFormProps {
   form: { allergen: string; severity: string; diagnosedDate: string; notes: string }
   isValid: boolean
   onFormChange: (form: { allergen: string; severity: string; diagnosedDate: string; notes: string }) => void
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 const allergySeverityOptions = [
@@ -21,8 +25,9 @@ const allergySeverityOptions = [
   { value: AllergySeverity.LIFE_THREATENING, label: 'Life-threatening' },
 ]
 
-export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: AllergyFormProps) {
-  const handleSuggestionSelect = (suggestion: AllergySuggestion) => {
+export function AllergyForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: AllergyFormProps) {
+
+   const handleSuggestionSelect = (suggestion: AllergySuggestion) => {
     // Auto-fill notes with common reactions if available
     const updates: Partial<typeof form> = { allergen: suggestion.name }
 
@@ -32,9 +37,9 @@ export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSa
 
     onFormChange({ ...form, ...updates })
   }
-
+    
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         <AutocompleteInput
           label="Allergen"

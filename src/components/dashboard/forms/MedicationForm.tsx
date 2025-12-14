@@ -14,9 +14,13 @@ interface MedicationFormProps {
   isOpen: boolean
   form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onFormChange: (form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 interface ScanMedicineResponse {
@@ -63,7 +67,7 @@ const mapFrequency = (apiFrequency?: string): string => {
   return frequencyMap[apiFrequency.toLowerCase()] || ''
 }
 
-export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: MedicationFormProps) {
+export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: MedicationFormProps) {
   const [isScanning, setIsScanning] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const authData = useAtomValue(userAtom)
@@ -148,9 +152,8 @@ export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, o
       }
     }
   }
-
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         {/* Scan Medicine Photo Button */}
         <button

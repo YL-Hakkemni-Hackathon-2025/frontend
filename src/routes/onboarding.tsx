@@ -228,6 +228,22 @@ function OnboardingPage() {
         />
 
         <AnimatePresence>
+          {isSubmitting && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/80 z-60 flex items-center justify-center"
+            >
+              <div className="flex flex-col items-center gap-4">
+                <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
+                <p className="text-white text-lg font-semibold">Processing your ID...</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
           {showSuccessSheet && (
             <>
               {/* Backdrop */}
@@ -271,7 +287,7 @@ function OnboardingPage() {
 
               <button
                 onClick={() => navigate({ to: '/dashboard' })}
-                className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-auto"
+                className="w-full h-12 bg-black rounded-full flex items-center justify-between px-6 mt-auto mb-6"
               >
                 <span></span>
                 <p className="text-base font-black text-white">Get started</p>
