@@ -9,6 +9,7 @@ interface HealthPassCardProps {
   showButton?: boolean
   qrCode?: string
   accessCode?: string
+  onEditName?: () => void
 }
 
 export function HealthPassCard({
@@ -19,6 +20,7 @@ export function HealthPassCard({
   showButton = false,
   qrCode,
   accessCode,
+  onEditName,
 }: HealthPassCardProps) {
   const cardHeight = showButton ? "h-[239px]" : "h-44"
 
@@ -82,7 +84,29 @@ export function HealthPassCard({
             </>
           )}
           <p className="font-black text-[#3C7BF5]">Name</p>
-          <p className="font-bold text-white">{name}</p>
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-white">{name}</p>
+            {onEditName && (
+              <button
+                onClick={onEditName}
+                className="p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <svg
+                  className="w-4 h-4 text-[#3C7BF5]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
           <p className="font-black text-[#3C7BF5] mt-2">DOB</p>
           <p className="font-bold text-white">{dob}</p>
         </div>

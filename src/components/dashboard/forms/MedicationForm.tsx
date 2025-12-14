@@ -3,6 +3,7 @@ import { FormInput } from '@/components/FormInput'
 import { FormTextArea } from '@/components/FormTextArea'
 import { FormSelect } from '@/components/FormSelect'
 import { MedicationFrequency } from '@/utils/global.types'
+import { AutocompleteInput, MedicationSuggestion } from '@/components/AutocompleteInput'
 
 interface MedicationFormProps {
   isOpen: boolean
@@ -25,14 +26,27 @@ const frequencyOptions = [
 ]
 
 export function MedicationForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: MedicationFormProps) {
+  const handleSuggestionSelect = (suggestion: MedicationSuggestion) => {
+    // Auto-fill dosage if available and not already set
+    if (suggestion.commonDosages?.length && !form.dosageAmount) {
+      onFormChange({
+        ...form,
+        medicationName: suggestion.name,
+        dosageAmount: suggestion.commonDosages[0]
+      })
+    }
+  }
+
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
       <div className="flex flex-col gap-6">
-        <FormInput
+        <AutocompleteInput
           label="Medication name"
           placeholder="e.g., Paracetamol"
           value={form.medicationName}
           onChange={(value) => onFormChange({ ...form, medicationName: value })}
+          endpoint="medications"
+          onSuggestionSelect={(s) => handleSuggestionSelect(s as MedicationSuggestion)}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormInput

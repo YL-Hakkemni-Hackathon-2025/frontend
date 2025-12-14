@@ -3,6 +3,7 @@ import { FormInput } from '@/components/FormInput'
 import { FormTextArea } from '@/components/FormTextArea'
 import { FormSelect } from '@/components/FormSelect'
 import { AllergyType, AllergySeverity } from '@/dtos/allergy.dto'
+import { AutocompleteInput, AllergySuggestion } from '@/components/AutocompleteInput'
 
 interface AllergyFormProps {
   isOpen: boolean
@@ -30,14 +31,30 @@ const allergySeverityOptions = [
 ]
 
 export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: AllergyFormProps) {
+  const handleSuggestionSelect = (suggestion: AllergySuggestion) => {
+    // Auto-fill type and reaction if available
+    const updates: Partial<typeof form> = { allergen: suggestion.name }
+
+    if (suggestion.type && !form.type) {
+      updates.type = suggestion.type
+    }
+    if (suggestion.commonReactions?.length && !form.reaction) {
+      updates.reaction = suggestion.commonReactions[0]
+    }
+
+    onFormChange({ ...form, ...updates })
+  }
+
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
       <div className="flex flex-col gap-6">
-        <FormInput
+        <AutocompleteInput
           label="Allergen"
           placeholder="e.g., Peanuts"
           value={form.allergen}
           onChange={(value) => onFormChange({ ...form, allergen: value })}
+          endpoint="allergies"
+          onSuggestionSelect={(s) => handleSuggestionSelect(s as AllergySuggestion)}
         />
         <FormSelect
           label="Type"
