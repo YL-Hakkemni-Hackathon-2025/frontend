@@ -17,8 +17,8 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
   const isMedicationValid = medicationForm.medicationName.trim() !== ''
 
   // Allergy form
-  const [allergyForm, setAllergyForm] = useState({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
-  const isAllergyValid = allergyForm.allergen.trim() !== '' && allergyForm.type.trim() !== ''
+  const [allergyForm, setAllergyForm] = useState({ allergen: '', severity: '', diagnosedDate: '', notes: '' })
+  const isAllergyValid = allergyForm.allergen.trim() !== ''
 
   // Lifestyle form
   const [lifestyleForm, setLifestyleForm] = useState({ category: '', description: '', frequency: '', startDate: '', notes: '' })
@@ -43,7 +43,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
     setActiveForm(null)
     setMedicalConditionForm({ name: '', diagnosedDate: '', notes: '' })
     setMedicationForm({ medicationName: '', dosageAmount: '', frequency: '', startDate: '', endDate: '', notes: '' })
-    setAllergyForm({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
+    setAllergyForm({ allergen: '', severity: '', diagnosedDate: '', notes: '' })
     setLifestyleForm({ category: '', description: '', frequency: '', startDate: '', notes: '' })
     setDocumentForm({ documentId: '', documentName: '', documentType: '', documentDate: '', notes: '', file: null })
     setPdfPreviewUrl(null)
@@ -190,9 +190,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
           endpoint = '/api/v1/allergies'
           body = {
             allergen: allergyForm.allergen,
-            type: allergyForm.type,
             severity: allergyForm.severity || undefined,
-            reaction: allergyForm.reaction || undefined,
             diagnosedDate: allergyForm.diagnosedDate || undefined,
             notes: allergyForm.notes || undefined,
           }

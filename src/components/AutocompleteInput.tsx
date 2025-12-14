@@ -58,11 +58,18 @@ export function AutocompleteInput({
   const wrapperRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const justSelectedRef = useRef(false)
 
   // Fetch suggestions when value changes
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current)
+    }
+
+    // Skip fetch if we just selected a suggestion
+    if (justSelectedRef.current) {
+      justSelectedRef.current = false
+      return
     }
 
     if (!value || value.length < 2 || !authData?.accessToken) {
@@ -116,7 +123,9 @@ export function AutocompleteInput({
   }, [])
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
+    justSelectedRef.current = true
     onChange(suggestion.name)
+    setSuggestions([])
     setShowSuggestions(false)
     onSuggestionSelect?.(suggestion)
   }

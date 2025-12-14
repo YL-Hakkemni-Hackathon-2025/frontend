@@ -2,26 +2,17 @@ import { BottomSheet } from '@/components/BottomSheet'
 import { FormInput } from '@/components/FormInput'
 import { FormTextArea } from '@/components/FormTextArea'
 import { FormSelect } from '@/components/FormSelect'
-import { AllergyType, AllergySeverity } from '@/dtos/allergy.dto'
+import { AllergySeverity } from '@/dtos/allergy.dto'
 import { AutocompleteInput, AllergySuggestion } from '@/components/AutocompleteInput'
 
 interface AllergyFormProps {
   isOpen: boolean
-  form: { allergen: string; type: string; severity: string; reaction: string; diagnosedDate: string; notes: string }
+  form: { allergen: string; severity: string; diagnosedDate: string; notes: string }
   isValid: boolean
-  onFormChange: (form: { allergen: string; type: string; severity: string; reaction: string; diagnosedDate: string; notes: string }) => void
+  onFormChange: (form: { allergen: string; severity: string; diagnosedDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
 }
-
-const allergyTypeOptions = [
-  { value: AllergyType.DRUG, label: 'Drug' },
-  { value: AllergyType.FOOD, label: 'Food' },
-  { value: AllergyType.ENVIRONMENTAL, label: 'Environmental' },
-  { value: AllergyType.INSECT, label: 'Insect' },
-  { value: AllergyType.LATEX, label: 'Latex' },
-  { value: AllergyType.OTHER, label: 'Other' },
-]
 
 const allergySeverityOptions = [
   { value: AllergySeverity.MILD, label: 'Mild' },
@@ -32,14 +23,11 @@ const allergySeverityOptions = [
 
 export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: AllergyFormProps) {
   const handleSuggestionSelect = (suggestion: AllergySuggestion) => {
-    // Auto-fill type and reaction if available
+    // Auto-fill notes with common reactions if available
     const updates: Partial<typeof form> = { allergen: suggestion.name }
 
-    if (suggestion.type && !form.type) {
-      updates.type = suggestion.type
-    }
-    if (suggestion.commonReactions?.length && !form.reaction) {
-      updates.reaction = suggestion.commonReactions[0]
+    if (suggestion.commonReactions?.length && !form.notes) {
+      updates.notes = `Common reactions: ${suggestion.commonReactions.join(', ')}`
     }
 
     onFormChange({ ...form, ...updates })
@@ -57,26 +45,12 @@ export function AllergyForm({ isOpen, form, isValid, onFormChange, onClose, onSa
           onSuggestionSelect={(s) => handleSuggestionSelect(s as AllergySuggestion)}
         />
         <FormSelect
-          label="Type"
-          placeholder="Select type"
-          value={form.type}
-          onChange={(value) => onFormChange({ ...form, type: value })}
-          options={allergyTypeOptions}
-        />
-        <FormSelect
           label="Severity"
           optional
           placeholder="Select severity"
           value={form.severity}
           onChange={(value) => onFormChange({ ...form, severity: value })}
           options={allergySeverityOptions}
-        />
-        <FormInput
-          label="Reaction"
-          optional
-          placeholder="e.g., Hives, difficulty breathing"
-          value={form.reaction}
-          onChange={(value) => onFormChange({ ...form, reaction: value })}
         />
         <FormInput
           label="Diagnosed date"
