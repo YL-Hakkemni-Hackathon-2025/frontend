@@ -2,99 +2,82 @@ import { IsString, IsOptional, IsDate, IsBoolean, IsEnum } from 'class-validator
 import { Type } from 'class-transformer';
 
 export enum AllergySeverity {
-  MILD = 'mild',
-  MODERATE = 'moderate',
-  SEVERE = 'severe',
-  LIFE_THREATENING = 'life_threatening'
+    MILD = 'mild',
+    MODERATE = 'moderate',
+    SEVERE = 'severe',
+    LIFE_THREATENING = 'life_threatening'
 }
 
 export enum AllergyType {
-  DRUG = 'drug',
-  FOOD = 'food',
-  ENVIRONMENTAL = 'environmental',
-  INSECT = 'insect',
-  LATEX = 'latex',
-  OTHER = 'other'
+    DRUG = 'drug',
+    FOOD = 'food',
+    ENVIRONMENTAL = 'environmental',
+    INSECT = 'insect',
+    LATEX = 'latex',
+    OTHER = 'other'
 }
 
 // Request DTOs
 export class CreateAllergyDto {
-  @IsString()
-  allergen!: string;
+    @IsString()
+    allergen!: string;
 
-  @IsEnum(AllergyType)
-  type!: AllergyType;
+    @IsOptional()
+    @IsEnum(AllergySeverity)
+    severity?: AllergySeverity;
 
-  @IsOptional()
-  @IsEnum(AllergySeverity)
-  severity?: AllergySeverity;
+    @IsOptional()
+    @IsDate()
+    @Type(() => Date)
+    diagnosedDate?: Date;
 
-  @IsOptional()
-  @IsString()
-  reaction?: string;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  diagnosedDate?: Date;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
+    @IsOptional()
+    @IsString()
+    notes?: string; // Include reaction details here
 }
 
 export class UpdateAllergyDto {
-  @IsOptional()
-  @IsString()
-  allergen?: string;
+    @IsOptional()
+    @IsString()
+    allergen?: string;
 
-  @IsOptional()
-  @IsEnum(AllergyType)
-  type?: AllergyType;
+    @IsOptional()
+    @IsEnum(AllergySeverity)
+    severity?: AllergySeverity;
 
-  @IsOptional()
-  @IsEnum(AllergySeverity)
-  severity?: AllergySeverity;
+    @IsOptional()
+    @IsDate()
+    @Type(() => Date)
+    diagnosedDate?: Date;
 
-  @IsOptional()
-  @IsString()
-  reaction?: string;
+    @IsOptional()
+    @IsString()
+    notes?: string; // Include reaction details here
 
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  diagnosedDate?: Date;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
 }
 
 // Response DTOs
 export class AllergyResponseDto {
-  id!: string;
-  userId!: string;
-  allergen!: string;
-  type!: AllergyType;
-  severity?: AllergySeverity;
-  reaction?: string;
-  diagnosedDate?: Date;
-  notes?: string;
-  isActive!: boolean;
-  createdAt!: Date;
-  updatedAt!: Date;
+    id!: string;
+    userId!: string;
+    allergen!: string;
+    type!: AllergyType; // AI-inferred
+    severity?: AllergySeverity;
+    diagnosedDate?: Date;
+    notes?: string;
+    isActive!: boolean;
+    createdAt!: Date;
+    updatedAt!: Date;
 }
 
 export class AllergySummaryDto {
     id!: string;
     allergen!: string;
-    type!: AllergyType;
+    type!: AllergyType; // AI-inferred
     severity?: AllergySeverity;
-    reaction?: string;
     aiRecommendation?: string;
 }
 
