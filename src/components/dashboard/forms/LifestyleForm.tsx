@@ -8,9 +8,13 @@ interface LifestyleFormProps {
   isOpen: boolean
   form: { category: string; description: string; frequency: string; startDate: string; notes: string }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   onFormChange: (form: { category: string; description: string; frequency: string; startDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 const lifestyleCategoryOptions = [
@@ -23,9 +27,9 @@ const lifestyleCategoryOptions = [
   { value: LifestyleCategory.OTHER, label: 'Other' },
 ]
 
-export function LifestyleForm({ isOpen, form, isValid, onFormChange, onClose, onSave }: LifestyleFormProps) {
+export function LifestyleForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: LifestyleFormProps) {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         <FormSelect
           label="Category"

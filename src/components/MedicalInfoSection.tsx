@@ -13,9 +13,10 @@ interface MedicalInfoSectionProps {
   showToggle?: boolean
   icon?: string
   onToggle?: (itemId: string, isEnabled: boolean) => Promise<void>
+  onItemClick?: (id: string) => void
 }
 
-export function MedicalInfoSection({ title, items, showToggle = true, icon, onToggle }: MedicalInfoSectionProps) {
+export function MedicalInfoSection({ title, items, showToggle = true, icon, onToggle, onItemClick }: MedicalInfoSectionProps) {
   return (
     <div
       className="w-full bg-white rounded-xl flex flex-col px-6"
@@ -52,6 +53,7 @@ export function MedicalInfoSection({ title, items, showToggle = true, icon, onTo
           icon={icon}
           itemId={item.id}
           onToggle={onToggle}
+          onClick={item.id && onItemClick ? () => onItemClick(item.id!) : undefined}
         />
       ))}
     </div>

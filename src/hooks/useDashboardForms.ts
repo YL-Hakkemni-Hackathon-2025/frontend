@@ -7,6 +7,8 @@ export type FormType = 'medical-condition' | 'medication' | 'allergy' | 'lifesty
 export function useDashboardForms(accessToken?: string, onSuccess?: () => void) {
   const [activeForm, setActiveForm] = useState<FormType>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
 
   // Medical Condition form
   const [medicalConditionForm, setMedicalConditionForm] = useState({ name: '', diagnosedDate: '', notes: '' })
@@ -41,6 +43,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
 
   const handleCloseBottomSheet = () => {
     setActiveForm(null)
+    setEditingItemId(null)
     setMedicalConditionForm({ name: '', diagnosedDate: '', notes: '' })
     setMedicationForm({ medicationName: '', dosageAmount: '', frequency: '', startDate: '', endDate: '', notes: '' })
     setAllergyForm({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
@@ -147,11 +150,14 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
 
     try {
       let endpoint = ''
+      let method = editingItemId ? 'PATCH' : 'POST'
       let body: Record<string, unknown> = {}
 
       switch (activeForm) {
         case 'medical-condition':
-          endpoint = '/api/v1/medical-conditions'
+          endpoint = editingItemId
+            ? `/api/v1/medical-conditions/${editingItemId}`
+            : '/api/v1/medical-conditions'
           body = {
             name: medicalConditionForm.name,
             diagnosedDate: medicalConditionForm.diagnosedDate || undefined,
@@ -160,7 +166,9 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
           break
 
         case 'medication':
-          endpoint = '/api/v1/medications'
+          endpoint = editingItemId
+            ? `/api/v1/medications/${editingItemId}`
+            : '/api/v1/medications'
           body = {
             medicationName: medicationForm.medicationName,
             dosageAmount: medicationForm.dosageAmount || undefined,
@@ -172,7 +180,9 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
           break
 
         case 'allergy':
-          endpoint = '/api/v1/allergies'
+          endpoint = editingItemId
+            ? `/api/v1/allergies/${editingItemId}`
+            : '/api/v1/allergies'
           body = {
             allergen: allergyForm.allergen,
             type: allergyForm.type,
@@ -184,7 +194,9 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
           break
 
         case 'lifestyle':
-          endpoint = '/api/v1/lifestyles'
+          endpoint = editingItemId
+            ? `/api/v1/lifestyles/${editingItemId}`
+            : '/api/v1/lifestyles'
           body = {
             category: lifestyleForm.category,
             description: lifestyleForm.description,
@@ -248,7 +260,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
       )
 
       const response = await fetch(apiUrl(endpoint), {
-        method: 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`,
@@ -259,12 +271,12 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
       const result = await response.json()
 
       if (response.ok && result.success) {
-        console.log('Successfully created:', activeForm, result.data)
-        toast.success('Saved successfully!')
+        console.log(editingItemId ? 'Successfully updated:' : 'Successfully created:', activeForm, result.data)
+        toast.success(editingItemId ? 'Updated successfully!' : 'Saved successfully!')
         handleCloseBottomSheet()
         onSuccess?.()
       } else {
-        console.error('Failed to create:', result)
+        console.error(editingItemId ? 'Failed to update:' : 'Failed to create:', result)
         toast.error(result.message || 'Failed to save. Please try again.')
       }
     } catch (error) {
@@ -275,10 +287,70 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
     }
   }
 
+  const handleDelete = async () => {
+    if (!accessToken || !editingItemId) {
+      console.error('No access token or item ID available')
+      return
+    }
+
+    setIsDeleting(true)
+
+    try {
+      let endpoint = ''
+
+      switch (activeForm) {
+        case 'medical-condition':
+          endpoint = `/api/v1/medical-conditions/${editingItemId}`
+          break
+        case 'medication':
+          endpoint = `/api/v1/medications/${editingItemId}`
+          break
+        case 'allergy':
+          endpoint = `/api/v1/allergies/${editingItemId}`
+          break
+        case 'lifestyle':
+          endpoint = `/api/v1/lifestyles/${editingItemId}`
+          break
+        case 'document':
+          endpoint = `/api/v1/documents/${editingItemId}`
+          break
+        default:
+          return
+      }
+
+      const response = await fetch(apiUrl(endpoint), {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      })
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        console.log('Successfully deleted:', activeForm, editingItemId)
+        toast.success('Deleted successfully!')
+        handleCloseBottomSheet()
+        onSuccess?.()
+      } else {
+        console.error('Failed to delete:', result)
+        toast.error(result.message || 'Failed to delete. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting:', error)
+      toast.error('An error occurred. Please try again.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   return {
     activeForm,
     setActiveForm,
     isSaving,
+    isDeleting,
+    editingItemId,
+    setEditingItemId,
     isUploading,
     uploadError,
     medicalConditionForm,
@@ -303,5 +375,6 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
     handleFileChange,
     handleRemoveFile,
     handleSave,
+    handleDelete,
   }
 }

@@ -9,6 +9,9 @@ interface DocumentFormProps {
   isOpen: boolean
   form: { documentId: string; documentName: string; documentType: string; documentDate: string; notes: string; file: File | null }
   isValid: boolean
+  isSaving?: boolean
+  isDeleting?: boolean
+  isEditMode?: boolean
   isUploading: boolean
   uploadError: string | null
   pdfPreviewUrl: string | null
@@ -18,6 +21,7 @@ interface DocumentFormProps {
   onRemoveFile: (e: React.MouseEvent) => void
   onClose: () => void
   onSave: () => void
+  onDelete?: () => void
 }
 
 const documentTypeOptions = [
@@ -35,6 +39,9 @@ export function DocumentForm({
   isOpen,
   form,
   isValid,
+  isSaving,
+  isDeleting,
+  isEditMode,
   isUploading,
   uploadError,
   pdfPreviewUrl,
@@ -44,9 +51,10 @@ export function DocumentForm({
   onRemoveFile,
   onClose,
   onSave,
+  onDelete,
 }: DocumentFormProps) {
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid && !isUploading}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid && !isUploading} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
       <div className="flex flex-col gap-6">
         {/* File picker box */}
         <div className="relative">

@@ -9,6 +9,11 @@ import AllergyIcon from '@/assets/AllergyIcon.svg'
 interface HealthDataSectionsProps {
   user: UserFullSummaryDto
   searchQuery?: string
+  onMedicalConditionClick?: (id: string) => void
+  onMedicationClick?: (id: string) => void
+  onAllergyClick?: (id: string) => void
+  onLifestyleClick?: (id: string) => void
+  onDocumentClick?: (id: string) => void
 }
 
 // Helper function to format dates that may be strings or Date objects
@@ -25,7 +30,15 @@ function matchesSearch(text: string | undefined | null, query: string): boolean 
   return text.toLowerCase().includes(query.toLowerCase())
 }
 
-export function HealthDataSections({ user, searchQuery = '' }: HealthDataSectionsProps) {
+export function HealthDataSections({
+  user,
+  searchQuery = '',
+  onMedicalConditionClick,
+  onMedicationClick,
+  onAllergyClick,
+  onLifestyleClick,
+  onDocumentClick,
+}: HealthDataSectionsProps) {
   // Filter documents
   const filteredDocuments = user.documents.filter((doc) =>
     matchesSearch(doc.documentName, searchQuery) ||
@@ -97,12 +110,14 @@ export function HealthDataSections({ user, searchQuery = '' }: HealthDataSection
           showToggle={false}
           icon={MedicalConditionIcon}
           items={filteredMedicalConditions.map((condition) => ({
+            id: condition.id,
             title: condition.name,
             description: condition.diagnosedDate
               ? `Diagnosed: ${formatDate(condition.diagnosedDate)}`
               : 'No diagnosis date',
             isRelevant: true,
           }))}
+          onItemClick={onMedicalConditionClick}
         />
       )}
 
@@ -113,12 +128,14 @@ export function HealthDataSections({ user, searchQuery = '' }: HealthDataSection
           showToggle={false}
           icon={MedicationIcon}
           items={filteredMedications.map((medication) => ({
+            id: medication.id,
             title: medication.medicationName,
             description: medication.startDate
               ? `Prescribed: ${formatDate(medication.startDate)}`
               : 'No prescription date',
             isRelevant: true,
           }))}
+          onItemClick={onMedicationClick}
         />
       )}
 
@@ -129,12 +146,14 @@ export function HealthDataSections({ user, searchQuery = '' }: HealthDataSection
           showToggle={false}
           icon={LifeStyleIcon}
           items={filteredLifestyles.map((lifestyle) => ({
+            id: lifestyle.id,
             title: lifestyle.description,
             description: lifestyle.updatedAt
               ? `Updated: ${formatDate(lifestyle.updatedAt)}`
               : 'No update date',
             isRelevant: true,
           }))}
+          onItemClick={onLifestyleClick}
         />
       )}
 
@@ -145,12 +164,14 @@ export function HealthDataSections({ user, searchQuery = '' }: HealthDataSection
           showToggle={false}
           icon={AllergyIcon}
           items={filteredAllergies.map((allergy) => ({
+            id: allergy.id,
             title: allergy.allergen,
             description: allergy.diagnosedDate
               ? `Diagnosed: ${formatDate(allergy.diagnosedDate)}`
               : 'No diagnosis date',
             isRelevant: true,
           }))}
+          onItemClick={onAllergyClick}
         />
       )}
     </div>

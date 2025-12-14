@@ -9,6 +9,7 @@ interface MedicalConditionItemProps {
   icon?: string
   itemId?: string
   onToggle?: (itemId: string, isEnabled: boolean) => Promise<void>
+  onClick?: () => void
 }
 
 export function MedicalConditionItem({
@@ -20,6 +21,7 @@ export function MedicalConditionItem({
   icon,
   itemId,
   onToggle,
+  onClick,
 }: MedicalConditionItemProps) {
   const [isEnabled, setIsEnabled] = useState(isRelevant)
   const [isLoading, setIsLoading] = useState(false)
@@ -57,7 +59,11 @@ export function MedicalConditionItem({
       {!showToggle && icon && <img src={icon} alt="Medical Condition" className="w-6 h-6 mr-3" />}
 
       {/* Left section */}
-      <div className="flex flex-col flex-1">
+      <div
+        className="flex flex-col flex-1"
+        onClick={onClick}
+        style={{ cursor: onClick ? 'pointer' : 'default' }}
+      >
         <h4
           style={{
             fontFamily: 'Inter',
