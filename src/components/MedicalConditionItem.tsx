@@ -88,6 +88,7 @@ export function MedicalConditionItem({
             letterSpacing: '0%',
             verticalAlign: 'middle',
             color: !showToggle ? '#AEAEAE' : (isRelevant ? '#0057FF' : '#000000'),
+            paddingRight: '5px',
           }}
         >
           {description}

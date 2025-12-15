@@ -282,7 +282,7 @@ function HealthPassResultsPage() {
           verticalAlign: 'middle',
         }}
       >
-        Relevant information for this visit
+        Included in your Pass
       </h2>
 
       {/* Information box */}
