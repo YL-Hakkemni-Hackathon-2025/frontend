@@ -43,6 +43,7 @@ export function FormInput({ label, optional = false, type = 'text', placeholder,
           WebkitAppearance: 'none',
           appearance: 'none',
           minWidth: 0,
+          color: value ? '#000000' : '#9E9E9E',
         }}
       />
     </div>
