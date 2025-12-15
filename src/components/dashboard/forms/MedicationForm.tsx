@@ -12,12 +12,12 @@ import toast from 'react-hot-toast'
 
 interface MedicationFormProps {
   isOpen: boolean
-  form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }
+  form: { medicationName: string; dosageAmount: string; dosageUnit: string; frequency: string; startDate: string; endDate: string; notes: string }
   isValid: boolean
   isSaving?: boolean
   isDeleting?: boolean
   isEditMode?: boolean
-  onFormChange: (form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
+  onFormChange: (form: { medicationName: string; dosageAmount: string; dosageUnit: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
   onDelete?: () => void
@@ -51,7 +51,6 @@ const frequencyOptions = [
   { value: MedicationFrequency.OTHER, label: 'Other' },
 ]
 
-// Map API frequency values to our enum values
 const mapFrequency = (apiFrequency?: string): string => {
   if (!apiFrequency) return ''
   const frequencyMap: Record<string, string> = {
@@ -197,18 +196,27 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Dosage"
-            placeholder="e.g., 500mg"
+            placeholder="e.g., 500"
+            type="text"
+            inputMode="decimal"
             value={form.dosageAmount}
             onChange={(value) => onFormChange({ ...form, dosageAmount: value })}
           />
           <FormSelect
-            label="Frequency"
-            placeholder="Select frequency"
-            value={form.frequency}
-            onChange={(value) => onFormChange({ ...form, frequency: value })}
-            options={frequencyOptions}
+            label="Unit"
+            placeholder="Unit"
+            value={form.dosageUnit}
+            onChange={(value) => onFormChange({ ...form, dosageUnit: value })}
+            options={dosageUnitOptions}
           />
         </div>
+        <FormSelect
+          label="Frequency"
+          placeholder="Select frequency"
+          value={form.frequency}
+          onChange={(value) => onFormChange({ ...form, frequency: value })}
+          options={frequencyOptions}
+        />
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Start date"
