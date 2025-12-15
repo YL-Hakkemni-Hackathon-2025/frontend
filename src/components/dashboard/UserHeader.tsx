@@ -9,7 +9,7 @@ export function UserHeader({ firstName, onMenuClick }: UserHeaderProps) {
   return (
     <div className="min-h-[33vh] bg-gradient-to-b from-[#003AAB] to-[#001745] rounded-b-[40px] pb-20">
       {/* Top navigation row */}
-      <div className="flex items-center justify-between px-4 pt-12">
+      <div className="flex items-center justify-between px-4 pt-6">
         {/* Menu button */}
         <button
           onClick={onMenuClick}
