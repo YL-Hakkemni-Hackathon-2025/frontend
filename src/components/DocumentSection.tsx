@@ -1,6 +1,7 @@
 import { DocumentItem } from './DocumentItem'
 
 interface DocumentInfo {
+  id: string
   title: string
   date: string
   aiSummary: string
@@ -10,9 +11,10 @@ interface DocumentInfo {
 interface DocumentSectionProps {
   title: string
   items: DocumentInfo[]
+  onItemClick?: (id: string) => void
 }
 
-export function DocumentSection({ title, items }: DocumentSectionProps) {
+export function DocumentSection({ title, items, onItemClick }: DocumentSectionProps) {
   return (
     <div
       className="w-full bg-white rounded-xl flex flex-col px-6"
@@ -39,12 +41,13 @@ export function DocumentSection({ title, items }: DocumentSectionProps) {
 
       {items.map((item, index) => (
         <DocumentItem
-          key={index}
+          key={item.id}
           title={item.title}
           date={item.date}
           aiSummary={item.aiSummary}
           fileUrl={item.fileUrl}
           isLast={index === items.length - 1}
+          onClick={onItemClick ? () => onItemClick(item.id) : undefined}
         />
       ))}
     </div>

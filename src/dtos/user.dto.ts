@@ -45,21 +45,29 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto {
-  @IsOptional()
-  @IsEnum(Gender)
-  gender?: Gender;
+    @IsOptional()
+    @IsEnum(Gender)
+    gender?: Gender;
 
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
+    @IsOptional()
+    @IsString()
+    phoneNumber?: string;
 
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+    @IsOptional()
+    @IsEmail()
+    email?: string;
 
-  @IsOptional()
-  @IsString()
-  profileImageUrl?: string;
+    @IsOptional()
+    @IsString()
+    profileImageUrl?: string;
+
+    @IsOptional()
+    @IsString()
+    firstName?: string;
+
+    @IsOptional()
+    @IsString()
+    lastName?: string;
 }
 
 // Response DTOs

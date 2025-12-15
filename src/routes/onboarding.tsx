@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useSetAtom } from 'jotai'
+import { useSetAtom, useAtomValue } from 'jotai'
 import toast from 'react-hot-toast'
 import backgroundImg from '@/assets/onboarding/background.png'
 import logoImg from '@/assets/onboarding/logo.svg'
@@ -30,9 +30,14 @@ function OnboardingPage() {
   const [userDetails, setUserDetailsState] = useState<UserResponseDto | null>(null)
   const [showSuccessSheet, setShowSuccessSheet] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showEditNameDialog, setShowEditNameDialog] = useState(false)
+  const [editFirstName, setEditFirstName] = useState('')
+  const [editLastName, setEditLastName] = useState('')
+  const [isUpdatingName, setIsUpdatingName] = useState(false)
   const setUserDetails = useSetAtom(userDetailsAtom)
   const navigate = useNavigate()
   const setUser = useSetAtom(userAtom)
+  const authData = useAtomValue(userAtom)
 
   // Disable scroll when success sheet is open
   useEffect(() => {
@@ -45,6 +50,69 @@ function OnboardingPage() {
       document.body.style.overflow = ''
     }
   }, [showSuccessSheet])
+
+  const handleEditName = () => {
+    if (userDetails) {
+      setEditFirstName(userDetails.firstName || '')
+      setEditLastName(userDetails.lastName || '')
+      setShowEditNameDialog(true)
+    }
+  }
+
+  const handleUpdateName = async () => {
+    if (!authData?.accessToken) {
+      toast.error('Not authenticated')
+      return
+    }
+
+    setIsUpdatingName(true)
+    try {
+      const response = await fetch(apiUrl('/api/v1/users/me'), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.accessToken}`,
+        },
+        body: JSON.stringify({
+          firstName: editFirstName,
+          lastName: editLastName,
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to update name')
+      }
+
+      // Update local state with new name
+      const updatedDetails = {
+        ...userDetails!,
+        firstName: editFirstName,
+        lastName: editLastName,
+        fullName: `${editFirstName} ${editLastName}`,
+      }
+      setUserDetailsState(updatedDetails)
+      setUserDetails(updatedDetails)
+
+      // Also update the user atom with new fullName
+      setUser({
+        ...authData,
+        user: {
+          ...authData.user,
+          fullName: `${editFirstName} ${editLastName}`,
+        },
+      })
+
+      toast.success('Name updated successfully')
+      setShowEditNameDialog(false)
+    } catch (err) {
+      console.error('Failed to update name:', err)
+      toast.error(err instanceof Error ? err.message : 'Failed to update name')
+    } finally {
+      setIsUpdatingName(false)
+    }
+  }
 
   const handleScanComplete = async (imageData: string) => {
     setIsSubmitting(true)
@@ -213,6 +281,7 @@ function OnboardingPage() {
                 <HealthPassCard
                   name={userDetails?.fullName || ''}
                   dob={userDetails?.dateOfBirth ? new Date(userDetails.dateOfBirth).toLocaleDateString() : ''}
+                  onEditName={handleEditName}
                 />
               </div>
 
@@ -224,6 +293,81 @@ function OnboardingPage() {
                 <p className="text-base font-black text-white">Get started</p>
                 <img alt={"arrow-forward"} src={arrowForwardImg}/>
               </button>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Edit Name Dialog */}
+        <AnimatePresence>
+          {showEditNameDialog && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowEditNameDialog(false)}
+                className="fixed inset-0 bg-black z-70"
+              />
+              {/* Dialog */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                className="fixed inset-0 flex items-center justify-center z-71 px-6"
+              >
+                <div className="bg-white rounded-2xl w-full max-w-sm p-6">
+                  <h3 className="font-black text-xl text-black text-center mb-4">
+                    Edit Name
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        First Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editFirstName}
+                        onChange={(e) => setEditFirstName(e.target.value)}
+                        className="w-full h-12 px-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#003AAB] focus:ring-1 focus:ring-[#003AAB]"
+                        placeholder="Enter first name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Last Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editLastName}
+                        onChange={(e) => setEditLastName(e.target.value)}
+                        className="w-full h-12 px-4 border border-gray-300 rounded-xl focus:outline-none focus:border-[#003AAB] focus:ring-1 focus:ring-[#003AAB]"
+                        placeholder="Enter last name"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+                    <button
+                      onClick={() => setShowEditNameDialog(false)}
+                      disabled={isUpdatingName}
+                      className="flex-1 h-12 border border-gray-300 rounded-full font-semibold text-gray-700 disabled:opacity-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleUpdateName}
+                      disabled={isUpdatingName || !editFirstName.trim() || !editLastName.trim()}
+                      className="flex-1 h-12 bg-[#003AAB] rounded-full font-semibold text-white disabled:opacity-50"
+                    >
+                      {isUpdatingName ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </>
           )}
