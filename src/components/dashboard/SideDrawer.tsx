@@ -27,10 +27,9 @@ export function SideDrawer({ isOpen, onClose, onLogout }: SideDrawerProps) {
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-xl"
-            style={{ overflow: 'hidden' }}
+            className="fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-xl overflow-y-auto flex flex-col"
           >
-            <div className="pl-6 pr-6 pt-8 pb-6 relative z-10">
+            <div className="pl-6 pr-6 pt-8 pb-6 relative z-10 flex-shrink-0">
               <h2 className="font-extrabold text-black mb-8" style={{ fontSize: '24px' }}>Menu</h2>
               <nav className="flex flex-col gap-2">
                 <button className="flex items-center justify-between font-bold text-black py-2" style={{ fontSize: '16px' }}>
@@ -54,17 +53,22 @@ export function SideDrawer({ isOpen, onClose, onLogout }: SideDrawerProps) {
                 </button>
               </nav>
             </div>
+            <div className="flex-1"></div>
             {/* Background SVG */}
-            <img
-              src={MenuBck}
-              alt=""
-              className="absolute bottom-0 right-0 pointer-events-none"
-              style={{
-                display: 'block',
-                maxWidth: 'none',
-                transform: 'translateX(-10px)'
-              }}
-            />
+            <div className="flex-shrink-0">
+              <img
+                src={MenuBck}
+                alt=""
+                className="pointer-events-none"
+                style={{
+                  display: 'block',
+                  maxWidth: 'none',
+                  height: '55vh',
+                  width: 'auto',
+                  marginLeft: '-1px'
+                }}
+              />
+            </div>
           </motion.div>
         </>
       )}
