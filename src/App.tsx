@@ -42,7 +42,7 @@ function App() {
       {/* Desktop - Show mobile UI in iOS mockup */}
       <div className="hidden md:flex h-screen w-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
         <IPhoneMockup screenWidth={370} screenType="island" hideStatusBar hideNavBar>
-          <div className="relative w-full h-full overflow-y-auto" style={{ transform: 'translateZ(0)' }}>
+          <div className="relative w-full h-full overflow-y-auto overflow-x-hidden" style={{ transform: 'translateZ(0)' }}>
             <RouterProvider router={router} context={{ isAuthenticated }} />
           </div>
         </IPhoneMockup>
