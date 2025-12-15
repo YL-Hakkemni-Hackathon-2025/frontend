@@ -16,23 +16,28 @@ export function HealthPassCard({ hasHealthData }: HealthPassCardProps) {
 
   return (
     <div className="px-4 -mt-16">
-      <button
-        onClick={handleClick}
-        disabled={!hasHealthData}
-        className={`w-full bg-white rounded-xl px-6 py-4 shadow-lg border border-gray-100 flex flex-row items-center justify-between gap-6 text-left ${
-          hasHealthData ? 'cursor-pointer active:scale-[0.98] transition-transform' : 'cursor-default'
-        }`}
+      <div
+        className="w-full bg-white rounded-xl px-6 py-6 shadow-lg border border-gray-100 flex flex-col gap-4"
       >
-        <img src={qrCodeIcon} alt="qrCodImage" />
-        <div className="flex flex-col">
-          <h2 className="font-black text-base text-black">HealthPass</h2>
-          <p className="text-black font-regular text-xs sm:text-xs mt-0">
-            {hasHealthData
-              ? 'Create a tailored summary for your next appointment'
-              : "Prepare a visit summary once you've added medical information"}
-          </p>
+        <div className="flex flex-row items-center gap-6">
+          <img src={qrCodeIcon} alt="qrCodImage" />
+          <div className="flex flex-col">
+            {/* <h2 className="font-black text-base text-black">HealthPass</h2> */}
+            <p className="text-black font-medium text-sm leading-[121%] mt-0">
+              {hasHealthData
+                ? 'Create a tailored summary for your next appointment'
+                : "Prepare a visit summary once you've added medical information"}
+            </p>
+          </div>
         </div>
-      </button>
+        <button
+          onClick={handleClick}
+          disabled={!hasHealthData}
+          className="w-full h-[45px] bg-[#012366] text-white rounded-full flex items-center justify-center font-bold text-sm leading-[121%]"
+        >
+          Create new healthpass
+        </button>
+      </div>
     </div>
   )
 }

@@ -39,7 +39,7 @@ export function AllergyForm({ isOpen, form, isValid, isSaving, isDeleting, isEdi
   }
     
   return (
-    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
+    <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting}>
       <div className="flex flex-col gap-6">
         <AutocompleteInput
           label="Allergen"
@@ -71,6 +71,27 @@ export function AllergyForm({ isOpen, form, isValid, isSaving, isDeleting, isEdi
           value={form.notes}
           onChange={(value) => onFormChange({ ...form, notes: value })}
         />
+
+        {isEditMode && onDelete && (
+          <button
+            onClick={onDelete}
+            disabled={isDeleting}
+            className="w-full flex items-center justify-center gap-2 py-3 text-center"
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 700,
+              fontSize: '16px',
+              lineHeight: '121%',
+              letterSpacing: '0%',
+              color: isDeleting ? '#A4A4A4' : '#FF0000',
+            }}
+          >
+            {isDeleting && (
+              <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+            )}
+            {isDeleting ? 'Deleting...' : 'Delete this allergy'}
+          </button>
+        )}
       </div>
     </BottomSheet>
   )

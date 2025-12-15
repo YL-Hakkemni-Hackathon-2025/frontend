@@ -272,7 +272,11 @@ function DashboardPage() {
         </>
       )}
 
-      {!hasHealthData && <EmptyState />}
+      {!hasHealthData && (
+        <div className="flex-1 flex items-center justify-center">
+          <EmptyState />
+        </div>
+      )}
 
       <SideDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} onLogout={handleLogout} />
 
