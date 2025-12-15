@@ -16,24 +16,40 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl, onClick 
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
-  const handleDownload = async () => {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.stopPropagation()
     if (!fileUrl) return
 
     setIsDownloading(true)
-    try {
-      // Fetch the file
-      const response = await fetch(fileUrl)
-      const blob = await response.blob()
 
-      // Create a download link
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = title || 'document.pdf'
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
+    // Detect if running on iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+    try {
+      if (isIOS) {
+        // For iOS, directly open in new tab - Safari doesn't support programmatic downloads well
+        window.open(fileUrl, '_blank')
+      } else {
+        // For other browsers, try to download
+        const response = await fetch(fileUrl)
+        const blob = await response.blob()
+
+        // Create a download link
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = title || 'document.pdf'
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+
+        // Clean up after a short delay
+        setTimeout(() => {
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        }, 100)
+      }
     } catch (error) {
       console.error('Download failed:', error)
       // Fallback to opening in new tab
@@ -91,7 +107,7 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl, onClick 
 
         {/* Download button */}
         <button
-          onClick={handleDownload}
+          onClick={(e) => handleDownload(e)}
           disabled={!fileUrl || isDownloading}
           className="flex items-center justify-center"
           style={{
