@@ -33,13 +33,16 @@ export function FormInput({ label, optional = false, type = 'text', placeholder,
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className={`w-full px-4 rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
+        className={`w-full px-4 rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : 'bg-white'}`}
         style={{
           height: '44px',
           fontFamily: 'Inter',
           fontSize: '14px',
           fontWeight: 400,
           boxShadow: '0px 0px 30px 0px #385DA41A',
+          WebkitAppearance: 'none',
+          appearance: 'none',
+          minWidth: 0,
         }}
       />
     </div>
