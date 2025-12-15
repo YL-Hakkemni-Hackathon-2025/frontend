@@ -6,12 +6,12 @@ import { MedicationFrequency } from '@/utils/global.types'
 
 interface MedicationFormProps {
   isOpen: boolean
-  form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }
+  form: { medicationName: string; dosageAmount: string; dosageUnit: string; frequency: string; startDate: string; endDate: string; notes: string }
   isValid: boolean
   isSaving?: boolean
   isDeleting?: boolean
   isEditMode?: boolean
-  onFormChange: (form: { medicationName: string; dosageAmount: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
+  onFormChange: (form: { medicationName: string; dosageAmount: string; dosageUnit: string; frequency: string; startDate: string; endDate: string; notes: string }) => void
   onClose: () => void
   onSave: () => void
   onDelete?: () => void
@@ -28,6 +28,16 @@ const frequencyOptions = [
   { value: MedicationFrequency.OTHER, label: 'Other' },
 ]
 
+const dosageUnitOptions = [
+  { value: 'mg', label: 'mg' },
+  { value: 'g', label: 'g' },
+  { value: 'mcg', label: 'mcg' },
+  { value: 'ml', label: 'ml' },
+  { value: 'units', label: 'units' },
+  { value: 'IU', label: 'IU' },
+  { value: '%', label: '%' },
+]
+
 export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, isEditMode, onFormChange, onClose, onSave, onDelete }: MedicationFormProps) {
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} onDelete={onDelete} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting} isEditMode={isEditMode}>
@@ -38,16 +48,25 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
           value={form.medicationName}
           onChange={(value) => onFormChange({ ...form, medicationName: value })}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <FormInput
             label="Dosage"
-            placeholder="e.g., 500mg"
+            placeholder="e.g., 500"
+            type="text"
+            inputMode="decimal"
             value={form.dosageAmount}
             onChange={(value) => onFormChange({ ...form, dosageAmount: value })}
           />
           <FormSelect
+            label="Unit"
+            placeholder="Unit"
+            value={form.dosageUnit}
+            onChange={(value) => onFormChange({ ...form, dosageUnit: value })}
+            options={dosageUnitOptions}
+          />
+          <FormSelect
             label="Frequency"
-            placeholder="Select frequency"
+            placeholder="Frequency"
             value={form.frequency}
             onChange={(value) => onFormChange({ ...form, frequency: value })}
             options={frequencyOptions}

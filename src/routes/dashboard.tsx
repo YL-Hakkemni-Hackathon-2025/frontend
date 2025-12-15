@@ -162,9 +162,16 @@ function DashboardPage() {
   const handleMedicationClick = (id: string) => {
     const medication = user?.medications.find(m => m.id === id)
     if (medication) {
+      // Parse dosageAmount to separate number and unit
+      const dosageStr = medication.dosageAmount || ''
+      const match = dosageStr.match(/^(\d+\.?\d*)\s*(.*)$/)
+      const dosageAmount = match ? match[1] : dosageStr
+      const dosageUnit = match ? match[2] : ''
+
       setMedicationForm({
         medicationName: medication.medicationName,
-        dosageAmount: medication.dosageAmount || '',
+        dosageAmount,
+        dosageUnit,
         frequency: medication.frequency || '',
         startDate: medication.startDate ? new Date(medication.startDate).toISOString().split('T')[0] : '',
         endDate: medication.endDate ? new Date(medication.endDate).toISOString().split('T')[0] : '',
