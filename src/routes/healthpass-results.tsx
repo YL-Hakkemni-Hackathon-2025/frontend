@@ -328,6 +328,7 @@ function HealthPassResultsPage() {
         <img src={UserDataIcon} alt="User Data" className="w-6 h-6" />
       </div>
 
+
       {/* Medical conditions section */}
       {healthPass.medicalConditions.length > 0 && (
         <MedicalInfoSection
@@ -337,6 +338,7 @@ function HealthPassResultsPage() {
             title: item.data.name,
             description: item.aiRecommendation || (item.isRelevant ? `Relevant to ${specialtyName.toLowerCase()} care` : `Not relevant to ${specialtyName.toLowerCase()} care`),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medicalCondition')}
         />
@@ -351,6 +353,7 @@ function HealthPassResultsPage() {
             title: item.data.medicationName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant for treatment decisions' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medication')}
         />
@@ -365,6 +368,7 @@ function HealthPassResultsPage() {
             title: item.data.allergen,
             description: item.aiRecommendation || (item.isRelevant ? 'Important for treatment safety' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('allergy')}
         />
@@ -379,6 +383,7 @@ function HealthPassResultsPage() {
             title: item.data.description,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant lifestyle factor' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('lifestyle')}
         />
@@ -393,6 +398,7 @@ function HealthPassResultsPage() {
             title: item.data.documentName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant document' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
+            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('document')}
         />

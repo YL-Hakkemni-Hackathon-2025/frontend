@@ -11,6 +11,7 @@ import {AppointmentSpecialty, HealthPassDataToggles, HealthPassStatus} from "@/u
 export class HealthPassItemDto<T> {
     data!: T;
     isRelevant!: boolean;
+    isEnabled!: boolean;
     aiRecommendation!: string;
 }
 
@@ -56,6 +57,11 @@ export class DataTogglesDto implements Partial<HealthPassDataToggles> {
     @IsArray()
     @IsString({ each: true })
     specificAllergies?: string[];
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    specificLifestyles?: string[];
 
     @IsOptional()
     @IsArray()
@@ -127,6 +133,9 @@ export class HealthPassResponseDto {
     // Overall AI recommendation
     aiRecommendations?: string;
 
+    // AI-generated profile summary based on toggled items, age, and patient info
+    aiProfileSummary?: string;
+
     expiresAt!: Date;
     lastAccessedAt?: Date;
     accessCount!: number;
@@ -154,6 +163,8 @@ export class HealthPassPreviewDto {
 
     // AI recommendations
     aiRecommendations?: string;
+
+    aiProfileSummary?: string;
 }
 
 export class HealthPassSummaryDto {
@@ -188,5 +199,25 @@ export class QrCodeDataDto {
     accessCode!: string;
     accessUrl!: string;
     expiresAt!: Date;
+}
+
+// DTO for toggling a specific item
+export enum HealthPassItemType {
+    MEDICAL_CONDITION = 'medicalCondition',
+    MEDICATION = 'medication',
+    ALLERGY = 'allergy',
+    LIFESTYLE = 'lifestyle',
+    DOCUMENT = 'document'
+}
+
+export class ToggleHealthPassItemDto {
+    @IsEnum(HealthPassItemType)
+    itemType!: HealthPassItemType;
+
+    @IsString()
+    itemId!: string;
+
+    @IsBoolean()
+    isEnabled!: boolean;
 }
 

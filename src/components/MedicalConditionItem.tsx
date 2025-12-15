@@ -8,6 +8,7 @@ interface MedicalConditionItemProps {
   showToggle?: boolean
   icon?: string
   itemId?: string
+  initialEnabled?: boolean
   onToggle?: (itemId: string, isEnabled: boolean) => Promise<void>
   onClick?: () => void
 }
@@ -20,10 +21,11 @@ export function MedicalConditionItem({
   showToggle = true,
   icon,
   itemId,
+  initialEnabled,
   onToggle,
   onClick,
 }: MedicalConditionItemProps) {
-  const [isEnabled, setIsEnabled] = useState(isRelevant)
+  const [isEnabled, setIsEnabled] = useState(initialEnabled !== undefined ? initialEnabled : isRelevant)
   const [isLoading, setIsLoading] = useState(false)
 
   const handleToggle = async () => {

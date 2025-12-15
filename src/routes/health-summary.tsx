@@ -239,25 +239,52 @@ function HealthSummaryPage() {
           Relevant Medical Summary
         </h2>
 
-        {/* AI Recommendations if available */}
-        {healthPass.aiRecommendations && (
+        {/* AI Profile Summary section */}
+        {healthPass.aiProfileSummary && (
           <div
-            className="w-full bg-blue-50 rounded-xl p-4 mb-4"
-            style={{ border: '1px solid #003AAB20' }}
+            className="w-full bg-gradient-to-r from-[#001568] to-[#0057FF] rounded-xl flex flex-col px-6 py-4 mb-4"
+            style={{
+              boxShadow: '0px 0px 30px 0px #0000000D',
+            }}
           >
-            <h3 className="font-bold text-sm text-[#003AAB] mb-2">AI Summary</h3>
-            <p className="text-sm text-gray-700">{healthPass.aiRecommendations}</p>
+            <h3
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 700,
+                fontSize: '14px',
+                lineHeight: '121%',
+                letterSpacing: '0%',
+                color: 'rgba(255, 255, 255, 0.7)',
+                marginBottom: '8px',
+              }}
+            >
+              AI Profile Summary
+            </h3>
+            <p
+              style={{
+                fontFamily: 'Inter',
+                fontWeight: 400,
+                fontSize: '14px',
+                lineHeight: '150%',
+                letterSpacing: '0%',
+                color: '#FFFFFF',
+              }}
+            >
+              {healthPass.aiProfileSummary}
+            </p>
           </div>
         )}
+
 
         {/* Documents section */}
         {healthPass.documents && healthPass.documents.length > 0 && (
           <DocumentSection
             title="Documents"
             items={healthPass.documents.map(doc => ({
+              id: doc.id,
               title: doc.documentName,
               date: doc.documentDate ? formatDate(doc.documentDate) : 'No date',
-              aiSummary: doc.notes || '',
+              aiSummary: doc.aiRecommendation || doc.notes || '',
               fileUrl: doc.fileUrl,
             }))}
           />
@@ -271,7 +298,7 @@ function HealthSummaryPage() {
             icon={MedicalConditionIcon}
             items={healthPass.medicalConditions.map(condition => ({
               title: condition.name,
-              description: condition.diagnosedDate ? `Diagnosed: ${formatDate(condition.diagnosedDate)}` : 'No diagnosis date',
+              description: condition.aiRecommendation || (condition.diagnosedDate ? `Diagnosed: ${formatDate(condition.diagnosedDate)}` : 'No diagnosis date'),
               isRelevant: true,
             }))}
           />
@@ -285,7 +312,7 @@ function HealthSummaryPage() {
             icon={MedicationIcon}
             items={healthPass.medications.map(medication => ({
               title: medication.medicationName,
-              description: medication.dosageAmount ? `Dosage: ${medication.dosageAmount}` : 'No dosage info',
+              description: medication.aiRecommendation || (medication.dosageAmount ? `Dosage: ${medication.dosageAmount}` : 'No dosage info'),
               isRelevant: true,
             }))}
           />
@@ -299,7 +326,7 @@ function HealthSummaryPage() {
             icon={LifeStyleIcon}
             items={healthPass.lifestyleChoices.map(lifestyle => ({
               title: lifestyle.description,
-              description: lifestyle.category || 'Lifestyle factor',
+              description: lifestyle.aiRecommendation || lifestyle.category || 'Lifestyle factor',
               isRelevant: true,
             }))}
           />
@@ -313,7 +340,7 @@ function HealthSummaryPage() {
             icon={AllergyIcon}
             items={healthPass.allergies.map(allergy => ({
               title: allergy.allergen,
-              description: allergy.severity ? `Severity: ${allergy.severity}` : 'No severity info',
+              description: allergy.aiRecommendation || (allergy.severity ? `Severity: ${allergy.severity}` : 'No severity info'),
               isRelevant: true,
             }))}
           />

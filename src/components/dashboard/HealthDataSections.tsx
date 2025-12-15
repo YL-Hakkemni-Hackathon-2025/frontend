@@ -70,7 +70,6 @@ export function HealthDataSections({
   const filteredAllergies = user.allergies.filter((allergy) =>
     matchesSearch(allergy.allergen, searchQuery) ||
     matchesSearch(allergy.type, searchQuery) ||
-    matchesSearch(allergy.reaction, searchQuery) ||
     matchesSearch(allergy.notes, searchQuery)
   )
 
@@ -95,11 +94,13 @@ export function HealthDataSections({
         <DocumentSection
           title="Documents"
           items={filteredDocuments.map((doc) => ({
+            id: doc.id,
             title: doc.documentName,
             date: formatDate(doc.documentDate),
             aiSummary: doc.notes || '',
             fileUrl: doc.fileUrl,
           }))}
+          onItemClick={onDocumentClick}
         />
       )}
 
