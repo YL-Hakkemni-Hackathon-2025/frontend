@@ -91,14 +91,14 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl, onClick 
           </h4>
           <p
             style={{
-              marginTop: '4px',
               fontFamily: 'Inter',
               fontWeight: 400,
-              fontSize: '14px',
+              fontSize: '12px',
               lineHeight: '121%',
               letterSpacing: '0%',
               verticalAlign: 'middle',
               color: '#AEAEAE',
+              paddingRight: '5px',
             }}
           >
             {date}

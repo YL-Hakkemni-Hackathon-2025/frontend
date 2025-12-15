@@ -230,6 +230,7 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Start date"
+            optional
             type="date"
             value={form.startDate}
             onChange={(value) => onFormChange({ ...form, startDate: value })}

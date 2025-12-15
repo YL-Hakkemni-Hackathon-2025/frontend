@@ -1,5 +1,5 @@
 import qrTemplate from '@/assets/onboarding/qr_template.png'
-import shareIcon from '@/assets/share.svg'
+import WhatsappIcon from '@/assets/WhatsappIcon.svg'
 
 interface HealthPassCardProps {
   name?: string
@@ -130,7 +130,7 @@ export function HealthPassCard({
                 background: '#003AAB',
               }}
             >
-              <img src={shareIcon} alt="share" className="w-5 h-5" />
+              <img src={WhatsappIcon} alt="share" className="w-5 h-5" />
               <p className="font-bold text-white text-xs">Share via Whatsapp</p>
             </button>
           </div>
