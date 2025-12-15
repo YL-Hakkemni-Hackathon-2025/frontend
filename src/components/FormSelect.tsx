@@ -39,11 +39,12 @@ export function FormSelect({ label, optional = false, placeholder, value, onChan
           WebkitAppearance: 'none',
           appearance: 'none',
           minWidth: 0,
+          color: value ? '#000000' : '#9E9E9E',
         }}
       >
-        <option value="">{placeholder || 'Select...'}</option>
+        <option value="" style={{ color: '#9E9E9E' }}>{placeholder || 'Select...'}</option>
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} style={{ color: '#000000' }}>
             {option.label}
           </option>
         ))}
