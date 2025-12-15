@@ -48,7 +48,7 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
           value={form.medicationName}
           onChange={(value) => onFormChange({ ...form, medicationName: value })}
         />
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Dosage"
             placeholder="e.g., 500"
@@ -64,14 +64,14 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
             onChange={(value) => onFormChange({ ...form, dosageUnit: value })}
             options={dosageUnitOptions}
           />
-          <FormSelect
-            label="Frequency"
-            placeholder="Frequency"
-            value={form.frequency}
-            onChange={(value) => onFormChange({ ...form, frequency: value })}
-            options={frequencyOptions}
-          />
         </div>
+        <FormSelect
+          label="Frequency"
+          placeholder="Select frequency"
+          value={form.frequency}
+          onChange={(value) => onFormChange({ ...form, frequency: value })}
+          options={frequencyOptions}
+        />
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="Start date"
