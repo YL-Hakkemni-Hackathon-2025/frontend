@@ -51,6 +51,16 @@ const frequencyOptions = [
   { value: MedicationFrequency.OTHER, label: 'Other' },
 ]
 
+const dosageUnitOptions = [
+    { value: 'mg', label: 'mg' },
+    { value: 'g', label: 'g' },
+    { value: 'mcg', label: 'mcg' },
+    { value: 'ml', label: 'ml' },
+    { value: 'units', label: 'units' },
+    { value: 'IU', label: 'IU' },
+    { value: '%', label: '%' },
+]
+
 const mapFrequency = (apiFrequency?: string): string => {
   if (!apiFrequency) return ''
   const frequencyMap: Record<string, string> = {
