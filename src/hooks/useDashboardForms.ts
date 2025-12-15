@@ -15,7 +15,7 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
   const isMedicalConditionValid = medicalConditionForm.name.trim() !== ''
 
   // Medication form
-  const [medicationForm, setMedicationForm] = useState({ medicationName: '', dosageAmount: '', frequency: '', startDate: '', endDate: '', notes: '' })
+  const [medicationForm, setMedicationForm] = useState({ medicationName: '', dosageAmount: '', dosageUnit: '', frequency: '', startDate: '', endDate: '', notes: '' })
   const isMedicationValid = medicationForm.medicationName.trim() !== ''
 
   // Allergy form
@@ -45,8 +45,8 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
     setActiveForm(null)
     setEditingItemId(null)
     setMedicalConditionForm({ name: '', diagnosedDate: '', notes: '' })
-    setMedicationForm({ medicationName: '', dosageAmount: '', frequency: '', startDate: '', endDate: '', notes: '' })
-    setAllergyForm({ allergen: '', severity: '', diagnosedDate: '', notes: '' })
+    setMedicationForm({ medicationName: '', dosageAmount: '', dosageUnit: '', frequency: '', startDate: '', endDate: '', notes: '' })
+    setAllergyForm({ allergen: '', type: '', severity: '', reaction: '', diagnosedDate: '', notes: '' })
     setLifestyleForm({ category: '', description: '', frequency: '', startDate: '', notes: '' })
     setDocumentForm({ documentId: '', documentName: '', documentType: '', documentDate: '', notes: '', file: null })
     setPdfPreviewUrl(null)
@@ -184,9 +184,13 @@ export function useDashboardForms(accessToken?: string, onSuccess?: () => void) 
           endpoint = editingItemId
             ? `/api/v1/medications/${editingItemId}`
             : '/api/v1/medications'
+          // Combine dosageAmount and dosageUnit
+          const dosageAmount = medicationForm.dosageAmount && medicationForm.dosageUnit
+            ? `${medicationForm.dosageAmount}${medicationForm.dosageUnit}`
+            : medicationForm.dosageAmount || undefined
           body = {
             medicationName: medicationForm.medicationName,
-            dosageAmount: medicationForm.dosageAmount || undefined,
+            dosageAmount: dosageAmount,
             frequency: medicationForm.frequency || undefined,
             startDate: medicationForm.startDate || undefined,
             endDate: medicationForm.endDate || undefined,

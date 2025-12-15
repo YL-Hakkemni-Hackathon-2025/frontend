@@ -1,14 +1,15 @@
 interface FormInputProps {
   label: string
   optional?: boolean
-  type?: 'text' | 'date'
+  type?: 'text' | 'date' | 'number'
   placeholder?: string
   value: string
   onChange: (value: string) => void
   disabled?: boolean
+  inputMode?: 'text' | 'numeric' | 'decimal'
 }
 
-export function FormInput({ label, optional = false, type = 'text', placeholder, value, onChange, disabled = false }: FormInputProps) {
+export function FormInput({ label, optional = false, type = 'text', placeholder, value, onChange, disabled = false, inputMode }: FormInputProps) {
   return (
     <div>
       <label
@@ -27,6 +28,7 @@ export function FormInput({ label, optional = false, type = 'text', placeholder,
       </label>
       <input
         type={type}
+        inputMode={inputMode}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
