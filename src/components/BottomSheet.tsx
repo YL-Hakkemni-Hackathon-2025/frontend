@@ -5,15 +5,13 @@ interface BottomSheetProps {
   isOpen: boolean
   onClose: () => void
   onSave: () => void
-  onDelete?: () => void
   isValid: boolean
   isSaving?: boolean
   isDeleting?: boolean
-  isEditMode?: boolean
   children: ReactNode
 }
 
-export function BottomSheet({ isOpen, onClose, onSave, onDelete, isValid, isSaving, isDeleting, isEditMode, children }: BottomSheetProps) {
+export function BottomSheet({ isOpen, onClose, onSave, isValid, isSaving, isDeleting, children }: BottomSheetProps) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -38,46 +36,24 @@ export function BottomSheet({ isOpen, onClose, onSave, onDelete, isValid, isSavi
               maxHeight: '85vh',
             }}
           >
-            <div className="p-6 pb-8 overflow-y-auto flex-1">
+            <div className="px-6 pb-8 overflow-y-auto flex-1">
               {/* Top buttons row */}
-              <div className="flex flex-row items-center justify-between mb-6 sticky top-0 bg-white z-10 -mx-6 px-6 pb-4">
-                {/* Cancel/Delete button */}
-                {isEditMode && onDelete ? (
-                  <button
-                    onClick={onDelete}
-                    disabled={isDeleting}
-                    className="flex items-center gap-2"
-                    style={{
-                      fontFamily: 'Inter',
-                      fontWeight: 700,
-                      fontSize: '16px',
-                      lineHeight: '121%',
-                      letterSpacing: '0%',
-                      verticalAlign: 'middle',
-                      color: isDeleting ? '#A4A4A4' : '#FF0000',
-                    }}
-                  >
-                    {isDeleting && (
-                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    )}
-                    {isDeleting ? 'Deleting...' : 'Delete'}
-                  </button>
-                ) : (
-                  <button
-                    onClick={onClose}
-                    style={{
-                      fontFamily: 'Inter',
-                      fontWeight: 700,
-                      fontSize: '16px',
-                      lineHeight: '121%',
-                      letterSpacing: '0%',
-                      verticalAlign: 'middle',
-                      color: '#FF0000',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                )}
+              <div className="flex flex-row items-center justify-between mb-6 sticky top-0 bg-white z-10 -mx-6 px-6 pb-4 pt-6 rounded-t-3xl">
+                {/* Cancel button */}
+                <button
+                  onClick={onClose}
+                  style={{
+                    fontFamily: 'Inter',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    lineHeight: '121%',
+                    letterSpacing: '0%',
+                    verticalAlign: 'middle',
+                    color: '#FF0000',
+                  }}
+                >
+                  Cancel
+                </button>
 
                 {/* Save button */}
                 <button

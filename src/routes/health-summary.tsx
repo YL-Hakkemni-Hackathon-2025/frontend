@@ -1,16 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import AppStoreDownload from '@/assets/AppStoreDownload.svg'
-import PlayStoreDownload from '@/assets/PlayStoreDownload.svg'
 import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
 import MedicationIcon from '@/assets/MedicationIcon.svg'
 import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
 import AllergyIcon from '@/assets/AllergyIcon.svg'
+import AIIcon from '@/assets/AIIcon.svg'
 import { MedicalInfoSection } from '@/components/MedicalInfoSection'
 import { DocumentSection } from '@/components/DocumentSection'
 import { HealthPassPreviewDto } from '@/dtos/health-pass.dto'
-import { AppointmentSpecialty } from '@/utils/global.types'
 import { apiUrl } from '@/utils/api'
 
 interface SearchParams {
@@ -25,32 +23,6 @@ export const Route = createFileRoute('/health-summary')({
   },
   component: HealthSummaryPage,
 })
-
-// Helper to get display name for specialty
-function getSpecialtyDisplayName(specialty: AppointmentSpecialty): string {
-  const names: Record<AppointmentSpecialty, string> = {
-    [AppointmentSpecialty.GASTROENTEROLOGY]: 'Gastroenterology',
-    [AppointmentSpecialty.ORTHOPEDICS]: 'Orthopedics',
-    [AppointmentSpecialty.CARDIOLOGY]: 'Cardiology',
-    [AppointmentSpecialty.DERMATOLOGY]: 'Dermatology',
-    [AppointmentSpecialty.NEUROLOGY]: 'Neurology',
-    [AppointmentSpecialty.OPHTHALMOLOGY]: 'Ophthalmology',
-    [AppointmentSpecialty.PEDIATRICS]: 'Pediatrics',
-    [AppointmentSpecialty.PSYCHIATRY]: 'Psychiatry',
-    [AppointmentSpecialty.RADIOLOGY]: 'Radiology',
-    [AppointmentSpecialty.UROLOGY]: 'Urology',
-    [AppointmentSpecialty.GYNECOLOGY]: 'Gynecology',
-    [AppointmentSpecialty.ONCOLOGY]: 'Oncology',
-    [AppointmentSpecialty.PULMONOLOGY]: 'Pulmonology',
-    [AppointmentSpecialty.RHEUMATOLOGY]: 'Rheumatology',
-    [AppointmentSpecialty.ENDOCRINOLOGY]: 'Endocrinology',
-    [AppointmentSpecialty.NEPHROLOGY]: 'Nephrology',
-    [AppointmentSpecialty.GENERAL_PRACTICE]: 'General Practice',
-    [AppointmentSpecialty.EMERGENCY]: 'Emergency',
-    [AppointmentSpecialty.OTHER]: 'Other',
-  }
-  return names[specialty] || 'Medical'
-}
 
 // Helper function to format dates
 function formatDate(date: Date | string | undefined | null): string {
@@ -137,43 +109,29 @@ function HealthSummaryPage() {
   }
 
   const age = healthPass.dateOfBirth ? calculateAge(healthPass.dateOfBirth) : ''
-  const specialtyName = getSpecialtyDisplayName(healthPass.appointmentSpecialty)
 
   return (
-    <div className="min-h-dvh bg-white">
+    <div className="min-h-dvh bg-white relative">
+      {/* Background ellipse - covers half the screen */}
+      <div className="absolute top-0 left-0 right-0 h-[65vh] w-full overflow-hidden z-0">
+        <div
+          className="absolute -top-[10%] left-1/2 -translate-x-1/2 w-[280%] h-full"
+          style={{
+            background: 'linear-gradient(to bottom, #003AAB 0%, #001745 100%)',
+            borderRadius: '50%',
+          }}
+        />
+      </div>
+
       {/* Header */}
       <div
-        className="w-full p-6"
-        style={{
-          background: '#003AAB',
-        }}
+        className="w-full p-6 relative z-10"
       >
         {/* Top row - Logo and Download buttons */}
-        <div className="flex flex-row items-center justify-between mb-[7px]">
+        <div className="flex flex-row items-center justify-center mb-[45px] mt-[25px]">
           {/* Left - Logo */}
           <img src="/logo.svg" alt="Logo" className="h-12" />
-
-          {/* Right - Download buttons */}
-          <div className="flex flex-col gap-[6px]">
-            <img src={AppStoreDownload} alt="Download on App Store" className="h-10" />
-            <img src={PlayStoreDownload} alt="Get it on Play Store" className="h-10" />
-          </div>
         </div>
-
-        {/* Patient Info */}
-        {/* Title */}
-        <h2
-          style={{
-            fontFamily: 'Inter',
-            fontWeight: 900,
-            fontSize: '24px',
-            lineHeight: '128%',
-            letterSpacing: '0%',
-            color: '#385DA4',
-          }}
-        >
-          {specialtyName} HealthPass
-        </h2>
 
         {/* Patient Name and Age */}
         <h1
@@ -198,10 +156,10 @@ function HealthSummaryPage() {
             lineHeight: '150%',
             letterSpacing: '0%',
             verticalAlign: 'middle',
-            color: '#FFFFFF',
+            color: '#CFCFCF',
           }}
         >
-          {healthPass.gender ? `${healthPass.gender} • ` : ''}DOB: {formatDate(healthPass.dateOfBirth)}
+          {healthPass.gender ? `${healthPass.gender} • ` : ''}HealthPass generated on {formatDate(new Date())}
         </p>
 
         {/* Appointment info if available */}
@@ -222,44 +180,31 @@ function HealthSummaryPage() {
       </div>
 
       {/* Medical Summary Section */}
-      <div className="px-6 pb-16">
-        <h2
-          style={{
-            marginTop: '22px',
-            marginBottom: '22px',
-            fontFamily: 'Inter',
-            fontWeight: 900,
-            fontSize: '18px',
-            lineHeight: '121%',
-            letterSpacing: '0%',
-            verticalAlign: 'middle',
-            color: '#000000',
-          }}
-        >
-          Relevant Medical Summary
-        </h2>
+      <div className="px-6 pb-16 relative z-10">
 
         {/* AI Profile Summary section */}
         {healthPass.aiProfileSummary && (
           <div
-            className="w-full bg-gradient-to-r from-[#001568] to-[#0057FF] rounded-xl flex flex-col px-6 py-4 mb-4"
+            className="w-full bg-white rounded-xl flex flex-col px-6 py-4 mb-4"
             style={{
               boxShadow: '0px 0px 30px 0px #0000000D',
             }}
           >
-            <h3
-              style={{
-                fontFamily: 'Inter',
-                fontWeight: 700,
-                fontSize: '14px',
-                lineHeight: '121%',
-                letterSpacing: '0%',
-                color: 'rgba(255, 255, 255, 0.7)',
-                marginBottom: '8px',
-              }}
-            >
-              AI Profile Summary
-            </h3>
+            <div className="flex items-center gap-1.5 mb-2">
+              <img src={AIIcon} alt="AI" className="w-4 h-4" />
+              <h3
+                style={{
+                  fontFamily: 'Inter',
+                  fontWeight: 700,
+                  fontSize: '14px',
+                  lineHeight: '121%',
+                  letterSpacing: '0%',
+                  color: '#000000',
+                }}
+              >
+                AI Profile Summary
+              </h3>
+            </div>
             <p
               style={{
                 fontFamily: 'Inter',
@@ -267,7 +212,7 @@ function HealthSummaryPage() {
                 fontSize: '14px',
                 lineHeight: '150%',
                 letterSpacing: '0%',
-                color: '#FFFFFF',
+                color: '#000000',
               }}
             >
               {healthPass.aiProfileSummary}

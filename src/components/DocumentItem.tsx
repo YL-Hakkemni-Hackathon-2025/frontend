@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import DocumentIcon from '@/assets/DocumentIcon.svg'
 import DownloadIcon from '@/assets/download.svg'
+import AIIcon from '@/assets/AIIcon.svg'
 
 interface DocumentItemProps {
   title: string
@@ -112,20 +113,22 @@ export function DocumentItem({ title, date, aiSummary, isLast, fileUrl, onClick 
 
       {/* AI Summary section */}
       <div className="flex flex-col" style={{ marginLeft: '36px' }}>
-        <h5
-          style={{
-            fontFamily: 'Inter',
-            fontWeight: 700,
-            fontSize: '14px',
-            lineHeight: '121%',
-            letterSpacing: '0%',
-            verticalAlign: 'middle',
-            color: '#000000',
-            marginBottom: '8px',
-          }}
-        >
-          AI summary
-        </h5>
+        <div className="flex items-center gap-1.5 mb-2">
+          <img src={AIIcon} alt="AI" className="w-4 h-4" />
+          <h5
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 700,
+              fontSize: '14px',
+              lineHeight: '121%',
+              letterSpacing: '0%',
+              verticalAlign: 'middle',
+              color: '#000000',
+            }}
+          >
+            AI summary
+          </h5>
+        </div>
         {isExpanded ? (
           <p
             style={{
