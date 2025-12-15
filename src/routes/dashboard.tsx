@@ -93,9 +93,9 @@ function DashboardPage() {
     handleDelete,
   } = useDashboardForms(authData?.accessToken, refreshUserData)
 
-  // Disable scroll when any form is open
+  // Disable scroll when any form, drawer, or FAB menu is open
   useEffect(() => {
-    if (activeForm) {
+    if (activeForm || isDrawerOpen || isFabMenuOpen) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
@@ -103,7 +103,7 @@ function DashboardPage() {
     return () => {
       document.body.style.overflow = ''
     }
-  }, [activeForm])
+  }, [activeForm, isDrawerOpen, isFabMenuOpen])
 
   // Fetch user summary on mount
   useEffect(() => {
