@@ -61,6 +61,8 @@ const dosageUnitOptions = [
     { value: '%', label: '%' },
 ]
 
+
+
 const mapFrequency = (apiFrequency?: string): string => {
   if (!apiFrequency) return ''
   const frequencyMap: Record<string, string> = {
@@ -164,28 +166,6 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} onSave={onSave} isValid={isValid} isSaving={isSaving} isDeleting={isDeleting}>
       <div className="flex flex-col gap-6">
-        {/* Scan Medicine Photo Button */}
-        <button
-          type="button"
-          onClick={handlePhotoCapture}
-          disabled={isScanning}
-          className="w-full h-14 border-2 border-dashed border-[#003AAB] rounded-2xl flex items-center justify-center gap-3 bg-blue-50 hover:bg-blue-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isScanning ? (
-            <>
-              <div className="w-5 h-5 border-2 border-[#003AAB] border-t-transparent rounded-full animate-spin" />
-              <span className="font-semibold text-[#003AAB]">Scanning medicine...</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-6 h-6 text-[#003AAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span className="font-semibold text-[#003AAB]">Take a photo of medicine</span>
-            </>
-          )}
-        </button>
         <input
           ref={fileInputRef}
           type="file"
@@ -202,6 +182,18 @@ export function MedicationForm({ isOpen, form, isValid, isSaving, isDeleting, is
           onChange={(value) => onFormChange({ ...form, medicationName: value })}
           endpoint="medications"
           onSuggestionSelect={(s) => handleSuggestionSelect(s as MedicationSuggestion)}
+          disabled={isScanning}
+          suffixIcon={
+            isScanning ? (
+              <div className="w-5 h-5 border-2 border-[#003AAB] border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <svg className="w-5 h-5 text-[#003AAB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            )
+          }
+          onSuffixClick={handlePhotoCapture}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormInput

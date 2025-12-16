@@ -12,6 +12,8 @@ interface AutocompleteInputProps {
   disabled?: boolean
   endpoint: 'medical-conditions' | 'medications' | 'allergies'
   onSuggestionSelect?: (suggestion: MedicalConditionSuggestion | MedicationSuggestion | AllergySuggestion) => void
+  suffixIcon?: React.ReactNode
+  onSuffixClick?: () => void
 }
 
 export interface MedicalConditionSuggestion {
@@ -49,6 +51,8 @@ export function AutocompleteInput({
   disabled = false,
   endpoint,
   onSuggestionSelect,
+  suffixIcon,
+  onSuffixClick,
 }: AutocompleteInputProps) {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -208,7 +212,7 @@ export function AutocompleteInput({
           onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          className={`w-full px-4 rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
+          className={`w-full px-4 ${suffixIcon ? 'pr-12' : ''} rounded-full outline-none border-2 border-white focus:border-black ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''}`}
           style={{
             height: '44px',
             fontFamily: 'Inter',
@@ -218,6 +222,17 @@ export function AutocompleteInput({
           }}
           autoComplete="off"
         />
+        {/* Suffix icon (e.g., camera icon) inside input */}
+        {suffixIcon && !isLoading && (
+          <button
+            type="button"
+            onClick={onSuffixClick}
+            disabled={disabled}
+            className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center p-1 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {suffixIcon}
+          </button>
+        )}
         {isLoading && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             <div className="w-5 h-5 border-2 border-gray-300 border-t-[#003AAB] rounded-full animate-spin" />

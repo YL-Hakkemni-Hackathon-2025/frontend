@@ -1,47 +1,47 @@
 import { IsString, IsOptional, IsEmail, IsEnum, IsDate } from 'class-validator';
 import { Type } from 'class-transformer';
-import {Gender} from "@/utils/global.types.ts";
-import {MedicalConditionResponseDto} from "@/dtos/medical-condition.dto.ts";
-import {MedicationResponseDto} from "@/dtos/medication.dto.ts";
-import {AllergyResponseDto} from "@/dtos/allergy.dto.ts";
-import {LifestyleResponseDto} from "@/dtos/lifestyle.dto.ts";
-import {DocumentResponseDto} from "@/dtos/document.dto.ts";
+import { Gender } from '@/utils/global.types';
+import {MedicalConditionResponseDto} from "./medical-condition.dto";
+import {MedicationResponseDto} from "./medication.dto";
+import {AllergyResponseDto} from "./allergy.dto";
+import {LifestyleResponseDto} from "./lifestyle.dto";
+import {DocumentResponseDto} from "./document.dto";
 
 // Request DTOs
 export class CreateUserDto {
-  @IsString()
-  firstName!: string;
+    @IsString()
+    firstName!: string;
 
-  @IsString()
-  lastName!: string;
+    @IsString()
+    lastName!: string;
 
-  @IsString()
-  governmentId!: string;
+    @IsString()
+    governmentId!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  dateOfBirth!: Date;
+    @IsDate()
+    @Type(() => Date)
+    dateOfBirth!: Date;
 
-  @IsString()
-  birthPlace!: string;
+    @IsString()
+    birthPlace!: string;
 
-  @IsString()
-  dadName!: string;
+    @IsString()
+    dadName!: string;
 
-  @IsString()
-  momFullName!: string;
+    @IsString()
+    momFullName!: string;
 
-  @IsOptional()
-  @IsEnum(Gender)
-  gender?: Gender;
+    @IsOptional()
+    @IsEnum(Gender)
+    gender?: Gender;
 
-  @IsOptional()
-  @IsString()
-  phoneNumber?: string;
+    @IsOptional()
+    @IsString()
+    phoneNumber?: string;
 
-  @IsOptional()
-  @IsEmail()
-  email?: string;
+    @IsOptional()
+    @IsEmail()
+    email?: string;
 }
 
 export class UpdateUserDto {
@@ -72,28 +72,28 @@ export class UpdateUserDto {
 
 // Response DTOs
 export class UserResponseDto {
-  id!: string;
-  firstName!: string;
-  lastName!: string;
-  fullName!: string;
-  governmentId!: string;
-  dateOfBirth!: Date;
-  birthPlace!: string;
-  dadName!: string;
-  momFullName!: string;
-  gender?: Gender;
-  phoneNumber?: string;
-  email?: string;
-  profileImageUrl?: string;
-  createdAt!: Date;
-  updatedAt!: Date;
+    id!: string;
+    firstName!: string;
+    lastName!: string;
+    fullName!: string;
+    governmentId!: string;
+    dateOfBirth!: Date;
+    birthPlace!: string;
+    dadName!: string;
+    momFullName!: string;
+    gender?: Gender;
+    phoneNumber?: string;
+    email?: string;
+    profileImageUrl?: string;
+    createdAt!: Date;
+    updatedAt!: Date;
 }
 
 export class UserSummaryDto {
-  id!: string;
-  fullName!: string;
-  dateOfBirth!: Date;
-  gender?: Gender;
+    id!: string;
+    fullName!: string;
+    dateOfBirth!: Date;
+    gender?: Gender;
 }
 
 export class UserFullSummaryDto {
@@ -108,6 +108,7 @@ export class UserFullSummaryDto {
     medicalConditions!: MedicalConditionResponseDto[];
     medications!: MedicationResponseDto[];
     allergies!: AllergyResponseDto[];
-    lifestyles!: LifestyleResponseDto[];
+    lifestyle!: LifestyleResponseDto | null;
     documents!: DocumentResponseDto[];
 }
+

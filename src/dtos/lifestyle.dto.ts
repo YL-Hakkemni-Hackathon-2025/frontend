@@ -1,74 +1,68 @@
-import { IsString, IsOptional, IsDate, IsBoolean, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import {LifestyleCategory} from "@/utils/global.types.ts";
+import {HabitFrequency, LifestyleCategory} from "@/utils/global.types.ts";
 
-// Request DTOs
-export class CreateLifestyleDto {
-  @IsEnum(LifestyleCategory)
-  category!: LifestyleCategory;
+// Habit DTOs
+export class HabitDto {
+    @IsEnum(LifestyleCategory)
+    category!: LifestyleCategory;
 
-  @IsString()
-  description!: string;
+    @IsEnum(HabitFrequency)
+    frequency!: HabitFrequency;
 
-  @IsOptional()
-  @IsString()
-  frequency?: string;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  startDate?: Date;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
+    @IsOptional()
+    @IsString()
+    notes?: string;
 }
 
+// Request DTOs
 export class UpdateLifestyleDto {
-  @IsOptional()
-  @IsEnum(LifestyleCategory)
-  category?: LifestyleCategory;
-
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @IsOptional()
-  @IsString()
-  frequency?: string;
-
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  startDate?: Date;
-
-  @IsOptional()
-  @IsString()
-  notes?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => HabitDto)
+    habits!: HabitDto[];
 }
 
 // Response DTOs
-export class LifestyleResponseDto {
-  id!: string;
-  userId!: string;
-  category!: LifestyleCategory;
-  description!: string;
-  frequency?: string;
-  startDate?: Date;
-  notes?: string;
-  isActive!: boolean;
-  createdAt!: Date;
-  updatedAt!: Date;
+export class HabitResponseDto {
+    category!: LifestyleCategory;
+    frequency!: HabitFrequency;
+    notes?: string;
 }
 
+export class LifestyleResponseDto {
+    id!: string;
+    userId!: string;
+    habits!: HabitResponseDto[];
+    isActive!: boolean;
+    createdAt!: Date;
+    updatedAt!: Date;
+}
+
+// Summary for health pass - individual habit summary
+export class HabitSummaryDto {
+    category!: LifestyleCategory;
+    frequency!: HabitFrequency;
+    notes?: string;
+    aiRecommendation?: string;
+    isToggled?: boolean;
+}
+
+// Overall lifestyle summary for health pass
 export class LifestyleSummaryDto {
     id!: string;
+    habits!: HabitSummaryDto[];
+}
+
+// Deprecated - keeping for backward compatibility during migration
+export class CreateLifestyleDto {
+    @IsEnum(LifestyleCategory)
     category!: LifestyleCategory;
+
+    @IsString()
     description!: string;
+
+    @IsOptional()
+    @IsString()
     frequency?: string;
-    aiRecommendation?: string;
 }

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useAtomValue, useSetAtom } from 'jotai'
 import toast from 'react-hot-toast'
 import { UserFullSummaryDto } from '@/dtos/user.dto'
+import { HabitDto } from '@/dtos/lifestyle.dto'
 import { UserHeader } from '@/components/dashboard/UserHeader'
 import { HealthPassCard } from '@/components/dashboard/HealthPassCard'
 import { SearchBar } from '@/components/dashboard/SearchBar'
@@ -34,6 +35,7 @@ function DashboardPage() {
   const [user, setUser] = useState<UserFullSummaryDto | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [isLifestyleSaving, setIsLifestyleSaving] = useState(false)
   const navigate = useNavigate()
   const authData = useAtomValue(userAtom)
   const setAuthData = useSetAtom(userAtom)
@@ -78,9 +80,6 @@ function DashboardPage() {
     allergyForm,
     setAllergyForm,
     isAllergyValid,
-    lifestyleForm,
-    setLifestyleForm,
-    isLifestyleValid,
     documentForm,
     setDocumentForm,
     isDocumentValid,
@@ -196,19 +195,45 @@ function DashboardPage() {
     }
   }
 
-  const handleLifestyleClick = (id: string) => {
-    const lifestyle = user?.lifestyles.find(l => l.id === id)
-    if (lifestyle) {
-      setLifestyleForm({
-        category: lifestyle.category,
-        description: lifestyle.description,
-        frequency: lifestyle.frequency || '',
-        startDate: lifestyle.startDate ? new Date(lifestyle.startDate).toISOString().split('T')[0] : '',
-        notes: lifestyle.notes || '',
+  const handleLifestyleClick = () => {
+    // Open the lifestyle form - it will be pre-populated with existing habits
+    setActiveForm('lifestyle')
+  }
+
+  const handleLifestyleSave = async (habits: HabitDto[]) => {
+    if (!authData?.accessToken) return
+
+    setIsLifestyleSaving(true)
+    try {
+      const response = await fetch(apiUrl('/api/v1/lifestyles'), {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authData.accessToken}`,
+        },
+        body: JSON.stringify({ habits }),
       })
-      setEditingItemId(id)
-      setActiveForm('lifestyle')
+
+      const result = await response.json()
+
+      if (response.ok && result.success) {
+        toast.success('Lifestyle updated successfully!')
+        setActiveForm(null)
+        refreshUserData()
+      } else {
+        console.error('Failed to save lifestyle:', result)
+        toast.error(result.message || 'Failed to save lifestyle')
+      }
+    } catch (error) {
+      console.error('Error saving lifestyle:', error)
+      toast.error('Failed to save lifestyle')
+    } finally {
+      setIsLifestyleSaving(false)
     }
+  }
+
+  const handleLifestyleClose = () => {
+    setActiveForm(null)
   }
 
   const handleDocumentClick = (id: string) => {
@@ -221,7 +246,7 @@ function DashboardPage() {
     (user.medicalConditions?.length ?? 0) > 0 ||
     (user.medications?.length ?? 0) > 0 ||
     (user.allergies?.length ?? 0) > 0 ||
-    (user.lifestyles?.length ?? 0) > 0 ||
+    (user.lifestyle?.habits?.filter(h => h.frequency !== 'not_set')?.length ?? 0) > 0 ||
     (user.documents?.length ?? 0) > 0
   ) : false
 
@@ -328,15 +353,10 @@ function DashboardPage() {
 
       <LifestyleForm
         isOpen={activeForm === 'lifestyle'}
-        form={lifestyleForm}
-        isValid={isLifestyleValid}
-        isSaving={isSaving}
-        isDeleting={isDeleting}
-        isEditMode={!!editingItemId}
-        onFormChange={setLifestyleForm}
-        onClose={handleCloseBottomSheet}
-        onSave={handleSave}
-        onDelete={handleDelete}
+        initialHabits={user?.lifestyle?.habits}
+        isSaving={isLifestyleSaving}
+        onSave={handleLifestyleSave}
+        onClose={handleLifestyleClose}
       />
 
       <DocumentForm

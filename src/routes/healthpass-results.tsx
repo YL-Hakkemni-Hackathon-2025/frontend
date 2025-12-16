@@ -338,7 +338,6 @@ function HealthPassResultsPage() {
             title: item.data.name,
             description: item.aiRecommendation || (item.isRelevant ? `Relevant to ${specialtyName.toLowerCase()} care` : `Not relevant to ${specialtyName.toLowerCase()} care`),
             isRelevant: item.isRelevant,
-            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medicalCondition')}
         />
@@ -353,7 +352,6 @@ function HealthPassResultsPage() {
             title: item.data.medicationName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant for treatment decisions' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
-            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('medication')}
         />
@@ -368,22 +366,20 @@ function HealthPassResultsPage() {
             title: item.data.allergen,
             description: item.aiRecommendation || (item.isRelevant ? 'Important for treatment safety' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
-            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('allergy')}
         />
       )}
 
       {/* Lifestyle section */}
-      {healthPass.lifestyles.length > 0 && (
+      {healthPass.habits && healthPass.habits.length > 0 && (
         <MedicalInfoSection
           title="Lifestyle"
-          items={healthPass.lifestyles.map(item => ({
-            id: item.data.id,
-            title: item.data.description,
+          items={healthPass.habits.map(item => ({
+            id: item.data.category,
+            title: item.data.category.charAt(0).toUpperCase() + item.data.category.slice(1),
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant lifestyle factor' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
-            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('lifestyle')}
         />
@@ -398,7 +394,6 @@ function HealthPassResultsPage() {
             title: item.data.documentName,
             description: item.aiRecommendation || (item.isRelevant ? 'Relevant document' : 'Not currently relevant'),
             isRelevant: item.isRelevant,
-            isEnabled: item.isEnabled,
           }))}
           onToggle={createToggleHandler('document')}
         />

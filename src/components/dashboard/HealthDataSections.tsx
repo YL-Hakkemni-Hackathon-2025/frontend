@@ -5,6 +5,7 @@ import MedicalConditionIcon from '@/assets/MedicalConditionIcon.svg'
 import MedicationIcon from '@/assets/MedicationIcon.svg'
 import LifeStyleIcon from '@/assets/LifeStyleIcon.svg'
 import AllergyIcon from '@/assets/AllergyIcon.svg'
+import { HabitFrequency, LifestyleCategory } from '@/utils/global.types'
 
 interface HealthDataSectionsProps {
   user: UserFullSummaryDto
@@ -12,7 +13,7 @@ interface HealthDataSectionsProps {
   onMedicalConditionClick?: (id: string) => void
   onMedicationClick?: (id: string) => void
   onAllergyClick?: (id: string) => void
-  onLifestyleClick?: (id: string) => void
+  onLifestyleClick?: () => void
   onDocumentClick?: (id: string) => void
 }
 
@@ -59,12 +60,41 @@ export function HealthDataSections({
     matchesSearch(medication.dosageAmount, searchQuery)
   )
 
-  // Filter lifestyles
-  const filteredLifestyles = user.lifestyles.filter((lifestyle) =>
-    matchesSearch(lifestyle.description, searchQuery) ||
-    matchesSearch(lifestyle.category, searchQuery) ||
-    matchesSearch(lifestyle.notes, searchQuery)
-  )
+  // Filter lifestyles - now based on habits
+  const lifestyleHabits = user.lifestyle?.habits?.filter((habit) =>
+    habit.frequency !== HabitFrequency.NOT_SET && (
+      matchesSearch(habit.category, searchQuery) ||
+      matchesSearch(habit.frequency, searchQuery) ||
+      matchesSearch(habit.notes, searchQuery)
+    )
+  ) || []
+
+  // Helper to get habit display name
+  const getHabitDisplayName = (category: LifestyleCategory): string => {
+    const names: Record<LifestyleCategory, string> = {
+      [LifestyleCategory.SMOKING]: 'Smoking',
+      [LifestyleCategory.ALCOHOL]: 'Alcohol',
+      [LifestyleCategory.EXERCISE]: 'Exercise',
+      [LifestyleCategory.DIET]: 'Diet',
+      [LifestyleCategory.SLEEP]: 'Sleep',
+      [LifestyleCategory.STRESS]: 'Stress',
+      [LifestyleCategory.OTHER]: 'Other',
+    }
+    return names[category] || category
+  }
+
+  // Helper to get frequency display name
+  const getFrequencyDisplayName = (frequency: HabitFrequency): string => {
+    const names: Record<HabitFrequency, string> = {
+      [HabitFrequency.NOT_SET]: 'Not set',
+      [HabitFrequency.NEVER]: 'Never',
+      [HabitFrequency.RARELY]: 'Rarely',
+      [HabitFrequency.OCCASIONALLY]: 'Occasionally',
+      [HabitFrequency.FREQUENTLY]: 'Frequently',
+      [HabitFrequency.DAILY]: 'Daily',
+    }
+    return names[frequency] || frequency
+  }
 
   // Filter allergies
   const filteredAllergies = user.allergies.filter((allergy) =>
@@ -76,7 +106,7 @@ export function HealthDataSections({
   const hasResults = filteredDocuments.length > 0 ||
     filteredMedicalConditions.length > 0 ||
     filteredMedications.length > 0 ||
-    filteredLifestyles.length > 0 ||
+    lifestyleHabits.length > 0 ||
     filteredAllergies.length > 0
 
   if (searchQuery && !hasResults) {
@@ -141,20 +171,18 @@ export function HealthDataSections({
       )}
 
       {/* Lifestyle section */}
-      {filteredLifestyles.length > 0 && (
+      {lifestyleHabits.length > 0 && (
         <MedicalInfoSection
           title="Lifestyle"
           showToggle={false}
           icon={LifeStyleIcon}
-          items={filteredLifestyles.map((lifestyle) => ({
-            id: lifestyle.id,
-            title: lifestyle.description,
-            description: lifestyle.updatedAt
-              ? `Updated: ${formatDate(lifestyle.updatedAt)}`
-              : 'No update date',
+          items={lifestyleHabits.map((habit) => ({
+            id: habit.category,
+            title: getHabitDisplayName(habit.category),
+            description: getFrequencyDisplayName(habit.frequency),
             isRelevant: true,
           }))}
-          onItemClick={onLifestyleClick}
+          onItemClick={() => onLifestyleClick?.()}
         />
       )}
 

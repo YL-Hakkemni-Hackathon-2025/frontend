@@ -264,14 +264,14 @@ function HealthSummaryPage() {
         )}
 
         {/* Lifestyle section */}
-        {healthPass.lifestyleChoices && healthPass.lifestyleChoices.length > 0 && (
+        {healthPass.habits && healthPass.habits.length > 0 && (
           <MedicalInfoSection
             title="Lifestyle"
             showToggle={false}
             icon={LifeStyleIcon}
-            items={healthPass.lifestyleChoices.map(lifestyle => ({
-              title: lifestyle.description,
-              description: lifestyle.aiRecommendation || lifestyle.category || 'Lifestyle factor',
+            items={healthPass.habits.map(habit => ({
+              title: habit.category.charAt(0).toUpperCase() + habit.category.slice(1),
+              description: habit.aiRecommendation || habit.frequency || 'Lifestyle habit',
               isRelevant: true,
             }))}
           />

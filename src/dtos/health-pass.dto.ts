@@ -1,25 +1,27 @@
 import { IsString, IsOptional, IsDate, IsBoolean, IsEnum, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { AppointmentSpecialty, HealthPassStatus, HealthPassDataToggles, LifestyleCategory } from '@/utils/global.types';
 import { MedicalConditionResponseDto, MedicalConditionSummaryDto } from './medical-condition.dto';
 import { MedicationResponseDto, MedicationSummaryDto } from './medication.dto';
 import { AllergyResponseDto, AllergySummaryDto } from './allergy.dto';
-import { LifestyleResponseDto, LifestyleSummaryDto } from './lifestyle.dto';
+import { LifestyleResponseDto, HabitResponseDto, HabitSummaryDto } from './lifestyle.dto';
 import { DocumentResponseDto, DocumentSummaryDto } from './document.dto';
-import {AppointmentSpecialty, HealthPassDataToggles, HealthPassStatus} from "@/utils/global.types.ts";
 
 // Health pass item with toggle and AI recommendation
 export class HealthPassItemDto<T> {
     data!: T;
     isRelevant!: boolean;
-    isEnabled!: boolean;
     aiRecommendation!: string;
 }
 
 export class HealthPassMedicalConditionItemDto extends HealthPassItemDto<MedicalConditionResponseDto> {}
 export class HealthPassMedicationItemDto extends HealthPassItemDto<MedicationResponseDto> {}
 export class HealthPassAllergyItemDto extends HealthPassItemDto<AllergyResponseDto> {}
-export class HealthPassLifestyleItemDto extends HealthPassItemDto<LifestyleResponseDto> {}
+export class HealthPassHabitItemDto extends HealthPassItemDto<HabitResponseDto> {}
 export class HealthPassDocumentItemDto extends HealthPassItemDto<DocumentResponseDto> {}
+
+// Deprecated - kept for backward compatibility
+export class HealthPassLifestyleItemDto extends HealthPassItemDto<LifestyleResponseDto> {}
 
 // Request DTOs
 export class DataTogglesDto implements Partial<HealthPassDataToggles> {
@@ -60,8 +62,8 @@ export class DataTogglesDto implements Partial<HealthPassDataToggles> {
 
     @IsOptional()
     @IsArray()
-    @IsString({ each: true })
-    specificLifestyles?: string[];
+    @IsEnum(LifestyleCategory, { each: true })
+    specificLifestyles?: LifestyleCategory[];
 
     @IsOptional()
     @IsArray()
@@ -127,7 +129,7 @@ export class HealthPassResponseDto {
     medicalConditions!: HealthPassMedicalConditionItemDto[];
     medications!: HealthPassMedicationItemDto[];
     allergies!: HealthPassAllergyItemDto[];
-    lifestyles!: HealthPassLifestyleItemDto[];
+    habits!: HealthPassHabitItemDto[];
     documents!: HealthPassDocumentItemDto[];
 
     // Overall AI recommendation
@@ -153,7 +155,7 @@ export class HealthPassPreviewDto {
     medicalConditions?: MedicalConditionSummaryDto[];
     medications?: MedicationSummaryDto[];
     allergies?: AllergySummaryDto[];
-    lifestyleChoices?: LifestyleSummaryDto[];
+    habits?: HabitSummaryDto[];
     documents?: DocumentSummaryDto[];
 
     // Appointment info
@@ -163,7 +165,6 @@ export class HealthPassPreviewDto {
 
     // AI recommendations
     aiRecommendations?: string;
-
     aiProfileSummary?: string;
 }
 
@@ -188,7 +189,7 @@ export class AiHealthPassSuggestionsDto {
     conditionRecommendations!: AiItemRecommendationDto[];
     medicationRecommendations!: AiItemRecommendationDto[];
     allergyRecommendations!: AiItemRecommendationDto[];
-    lifestyleRecommendations!: AiItemRecommendationDto[];
+    habitRecommendations!: AiItemRecommendationDto[];
     documentRecommendations!: AiItemRecommendationDto[];
 
     // Overall recommendation message
