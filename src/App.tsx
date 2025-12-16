@@ -1,17 +1,21 @@
 import { RouterProvider } from '@tanstack/react-router'
 import { useAtomValue } from 'jotai'
 import { Toaster } from 'react-hot-toast'
-import { IPhoneMockup } from 'react-device-mockup'
 import { router } from './router'
 import { userAtom } from '@/atoms/user.atom'
 
-function App() {
+// Check if we're inside the iframe (mobile view mode)
+const isEmbedded = new URLSearchParams(window.location.search).get('embedded') === 'true'
+
+// Check if we're on a desktop screen
+const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 768
+
+function MobileApp() {
   const user = useAtomValue(userAtom)
   const isAuthenticated = !!user
 
   return (
     <>
-      {/* Toast notifications */}
       <Toaster
         position="top-center"
         toastOptions={{
@@ -38,22 +42,62 @@ function App() {
           },
         }}
       />
-
-      {/* Desktop - Show mobile UI in iOS mockup */}
-      <div className="hidden md:flex h-screen w-screen items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8">
-        <IPhoneMockup screenWidth={370} screenType="island" hideStatusBar hideNavBar>
-          <div className="relative w-full h-full overflow-y-auto overflow-x-hidden" style={{ transform: 'translateZ(0)' }}>
-            <RouterProvider router={router} context={{ isAuthenticated }} />
-          </div>
-        </IPhoneMockup>
-      </div>
-
-      {/* Mobile - Full screen */}
-      <div className="md:hidden min-h-screen bg-white">
+      <div className="min-h-screen bg-white">
         <RouterProvider router={router} context={{ isAuthenticated }} />
       </div>
     </>
   )
+}
+
+function DesktopWrapper() {
+  // iPhone 14 Pro dimensions
+  const phoneWidth = 393
+  const phoneHeight = 852
+  const frameWidth = phoneWidth + 24 // Add frame padding
+  const frameHeight = phoneHeight + 24
+
+  return (
+    <div className="h-screen w-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* iPhone Frame */}
+      <div
+        className="relative bg-black rounded-[55px] p-3 shadow-2xl"
+        style={{ width: frameWidth, height: frameHeight }}
+      >
+        {/* Screen */}
+        <div
+          className="relative bg-white rounded-[45px] overflow-hidden"
+          style={{ width: phoneWidth, height: phoneHeight }}
+        >
+          <iframe
+            src={`${window.location.origin}${window.location.pathname}?embedded=true`}
+            className="w-full h-full border-0"
+            title="Mobile View"
+          />
+        </div>
+
+        {/* Home indicator */}
+        <div
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white rounded-full"
+          style={{ width: 134, height: 5 }}
+        />
+      </div>
+    </div>
+  )
+}
+
+function App() {
+  // If embedded in iframe, just render the mobile app
+  if (isEmbedded) {
+    return <MobileApp />
+  }
+
+  // On desktop without embed param, show the phone mockup
+  if (isDesktop) {
+    return <DesktopWrapper />
+  }
+
+  // On actual mobile devices, show the app directly
+  return <MobileApp />
 }
 
 export default App
