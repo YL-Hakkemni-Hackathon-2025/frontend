@@ -25,22 +25,6 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
   const [scanSuccess, setScanSuccess] = useState(false)
   const sdkRef = useRef<ScanbotSDK | null>(null)
   const scannerRef = useRef<Awaited<ReturnType<ScanbotSDK['createDocumentScanner']>> | null>(null)
-  const LICENSE_KEY =
-        "WezA/HkyRRi1umPjs5Qgkj1MyITLV5" +
-        "0BmIWhmPpsBlPokhZ2avkLCmJoCQlx" +
-        "bbFsHlP51oCDmNS8YFVcq5NR7Hz4LM" +
-        "upUKpWVWTYNhqxsIRPt2KSWMQW2ZK/" +
-        "5xv4UzgjmRUdLFQp34PXbyg//EmsL6" +
-        "wpFe2LdsPxqCuFEwKdRA1hi0JWYlcX" +
-        "khmb/kbP558giYC7BCbohy+W2Sqb/I" +
-        "LeCW5rYFfnbdGbxPTv2jgb2VGlG2a7" +
-        "T2CuhzPPSX/FvDk323kUNtn81Oo1C7" +
-        "CX8YbjH9VwQagh4eRjUKzAkTlZBCxG" +
-        "v2YXKNdQx9UvgG8MMTdb2+VLk8jNVH" +
-        "g44jSwYs1nXQ==\nU2NhbmJvdFNESw" +
-        "psb2NhbGhvc3R8aGFra2VtbmkuaW50" +
-        "ZXJuYWxpemFibGUuZGV2CjE3NjYxOD" +
-        "g3OTkKODM4ODYwNwo4\n";
 
   useEffect(() => {
     if (!isOpen) return
@@ -52,7 +36,7 @@ export function ScannerModal({ isOpen, onClose, onScanComplete }: ScannerModalPr
 
         // Initialize Scanbot SDK (using trial license - works for 60 seconds)
         const sdk = await ScanbotSDK.initialize({
-          licenseKey: LICENSE_KEY, // Empty string for trial mode
+          licenseKey: '', // Empty string for trial mode
           enginePath: 'https://cdn.jsdelivr.net/npm/scanbot-web-sdk@8.0.0/bundle/bin/complete/'
         })
         sdkRef.current = sdk
